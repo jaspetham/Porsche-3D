@@ -3,6 +3,8 @@ import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js'
 import { Tween, Easing, Group } from 'three/examples/jsm/libs/tween.module.js'
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader'
 import { DRACOLoader } from 'three/examples/jsm/loaders/DRACOLoader.js'
+import vertex from '@/assets/shaders/vertex.glsl'
+import fragment from '@/assets/shaders/fragment.glsl'
 import * as dat from 'lil-gui'
 // import gsap from 'gsap'
 class Canvas {
@@ -24,9 +26,11 @@ class Canvas {
       0.001,
       1000,
     )
+    this.camera.position.set(0, 0, 1)
 
-    this.camera.position.set(0, 0, 2)
     this.controls = new OrbitControls(this.camera, this.renderer.domElement)
+    this.controls.update()
+    this.controls.enableDamping = true
     this.time = new THREE.Clock()
     this.elapsedTime = 0
     this.previousTime = 0
@@ -34,12 +38,12 @@ class Canvas {
     this.isPlaying = true
     this.loadModels()
     this.loadAudios()
-    this.addObjects()
+    // this.addObjects()
     this.addLights()
     this.resize()
     this.render()
     this.setupResize()
-    // this.settings();
+    // this.settings()
   }
 
   clearScene() {
@@ -61,7 +65,7 @@ class Canvas {
     this.camera.add(this.listener)
     this.sound = new THREE.Audio(this.listener)
     this.audioLoader = new THREE.AudioLoader()
-    this.audioLoader.load('audio/porsche.mp3', (buffer) => {
+    this.audioLoader.load('audio/porsche_updated.mp3', (buffer) => {
       this.sound.setBuffer(buffer)
     })
   }
@@ -94,14 +98,15 @@ class Canvas {
 
     this.gltfLoader.load('/models/porsche.glb', (gltf) => {
       this.porsche = gltf.scene
-      console.log(this.porsche.position)
+      this.porsche.position.set(0, -0.6, -3)
+      this.porsche.rotation.y = 270 * (Math.PI / 180)
       this.scene.add(this.porsche)
       this.clearScene()
     })
   }
   startAudio() {
     if (!this.sound.isPlaying) {
-      this.sound.play()
+      // this.sound.play()
       const yPosition = { y: 10 }
       const loadingCover = document.getElementById('loading-text-intro')
       this.tweenCover = new Tween(yPosition)
@@ -120,10 +125,118 @@ class Canvas {
   }
   settings() {
     this.settings = {
-      progress: 0,
+      cameraX: this.camera.position.x,
+      cameraY: this.camera.position.y,
+      cameraZ: this.camera.position.z,
+      light1X: this.light1.position.x,
+      light1Y: this.light1.position.y,
+      light1Z: this.light1.position.z,
+      light2X: this.light2.position.x,
+      light2Y: this.light2.position.y,
+      light2Z: this.light2.position.z,
+      // modelPositionX: this.porsche ? this.porsche.position.x : 0,
+      // modelPositionY: this.porsche ? this.porsche.position.y : -0.6,
+      // modelPositionZ: this.porsche ? this.porsche.position.z : -3,
+      // modelRotationX: this.porsche ? this.porsche.rotation.x : 0,
+      // modelRotationY: this.porsche ? this.porsche.rotation.y : 270 * (Math.PI / 180),
+      // modelRotationZ: this.porsche ? this.porsche.rotation.z : 0,
     }
+
     this.gui = new dat.GUI()
-    this.gui.add(this.settings, 'progress', 0, 1, 0.01)
+
+    // camera position
+    this.gui.add(this.settings, 'cameraX', -10, 10, 0.01).onChange((value) => {
+      this.camera.position.x = parseFloat(value.toFixed(2))
+      this.settings.cameraX = this.camera.position.x.toFixed(2)
+    })
+
+    this.gui.add(this.settings, 'cameraY', -10, 10, 0.01).onChange((value) => {
+      this.camera.position.y = parseFloat(value.toFixed(2))
+      this.settings.cameraY = this.camera.position.y.toFixed(2)
+    })
+
+    this.gui.add(this.settings, 'cameraZ', -10, 10, 0.01).onChange((value) => {
+      this.camera.position.z = parseFloat(value.toFixed(2))
+      this.settings.cameraZ = this.camera.position.z.toFixed(2)
+    })
+
+    // light 1 position
+    this.gui.add(this.settings, 'light1X', -10, 10, 0.01).onChange((value) => {
+      this.light1.position.z = parseFloat(value.toFixed(2))
+      this.settings.light1X = this.light1.position.x.toFixed(2)
+    })
+    this.gui.add(this.settings, 'light1Y', -10, 10, 0.01).onChange((value) => {
+      this.light1.position.z = parseFloat(value.toFixed(2))
+      this.settings.light1Y = this.light1.position.y.toFixed(2)
+    })
+    this.gui.add(this.settings, 'light1Z', -10, 10, 0.01).onChange((value) => {
+      this.light1.position.z = parseFloat(value.toFixed(2))
+      this.settings.light1Z = this.light1.position.z.toFixed(2)
+    })
+
+    // light 2 pos
+    this.gui.add(this.settings, 'light2X', -10, 10, 0.01).onChange((value) => {
+      this.light2.position.z = parseFloat(value.toFixed(2))
+      this.settings.light2X = this.light2.position.x.toFixed(2)
+    })
+    this.gui.add(this.settings, 'light2Y', -10, 10, 0.01).onChange((value) => {
+      this.light2.position.z = parseFloat(value.toFixed(2))
+      this.settings.light2X = this.light2.position.y.toFixed(2)
+    })
+    this.gui.add(this.settings, 'light2Z', -10, 10, 0.01).onChange((value) => {
+      this.light2.position.z = parseFloat(value.toFixed(2))
+      this.settings.light2X = this.light2.position.z.toFixed(2)
+    })
+
+    // model position
+    // this.gui.add(this.settings, 'modelPositionX', -10, 10, 0.01).onChange((value) => {
+    //   if (this.porsche) {
+    //     this.porsche.position.x = parseFloat(value.toFixed(2))
+    //     this.settings.modelPositionX = this.porsche.position.x.toFixed(2)
+    //   }
+    // })
+
+    // this.gui.add(this.settings, 'modelPositionY', -10, 10, 0.01).onChange((value) => {
+    //   if (this.porsche) {
+    //     this.porsche.position.y = parseFloat(value.toFixed(2))
+    //     this.settings.modelPositionY = this.porsche.position.y.toFixed(2)
+    //   }
+    // })
+
+    // this.gui.add(this.settings, 'modelPositionZ', -10, 10, 0.01).onChange((value) => {
+    //   if (this.porsche) {
+    //     this.porsche.position.z = parseFloat(value.toFixed(2))
+    //     this.settings.modelPositionZ = this.porsche.position.z.toFixed(2)
+    //   }
+    // })
+
+    // // model rotation
+    // this.gui
+    //   .add(this.settings, 'modelRotationX', -Math.PI, Math.PI, 0.01)
+    //   .onChange((value) => {
+    //     if (this.porsche) {
+    //       this.porsche.rotation.x = parseFloat(value.toFixed(2))
+    //     }
+    //   })
+    //   .listen()
+
+    // this.gui
+    //   .add(this.settings, 'modelRotationY', -Math.PI, Math.PI, 0.01)
+    //   .onChange((value) => {
+    //     if (this.porsche) {
+    //       this.porsche.rotation.y = parseFloat(value.toFixed(2))
+    //     }
+    //   })
+    //   .listen()
+
+    // this.gui
+    //   .add(this.settings, 'modelRotationZ', -Math.PI, Math.PI, 0.01)
+    //   .onChange((value) => {
+    //     if (this.porsche) {
+    //       this.porsche.rotation.z = parseFloat(value.toFixed(2))
+    //     }
+    //   })
+    //   .listen()
   }
 
   setupResize() {
@@ -139,15 +252,29 @@ class Canvas {
   }
 
   addLights() {
-    const light1 = new THREE.AmbientLight(0xffffff, 0.5)
-    this.scene.add(light1)
+    this.light1 = new THREE.AmbientLight(0xffffff, 0.5)
+    this.scene.add(this.light1)
 
-    const light2 = new THREE.DirectionalLight(0xffffff, 0.5)
-    light2.position.set(0.5, 0, 0.866)
-    this.scene.add(light2)
+    this.light2 = new THREE.DirectionalLight(0xffffff, 0.5)
+    this.light2.position.set(0.5, 0, 0.866)
+    this.scene.add(this.light2)
   }
 
-  addObjects() {}
+  addObjects() {
+    this.material = new THREE.ShaderMaterial({
+      side: THREE.DoubleSide,
+      uniforms: {
+        time: { value: 0 },
+        resolution: { value: new THREE.Vector4() },
+      },
+      vertexShader: vertex,
+      fragmentShader: fragment,
+    })
+
+    this.geometry = new THREE.PlaneGeometry(1, 1, 1, 1)
+    this.plane = new THREE.Mesh(this.geometry, this.material)
+    this.scene.add(this.plane)
+  }
 
   stop() {
     this.isPlaying = false
@@ -165,6 +292,7 @@ class Canvas {
     this.elapsedTime = this.time.getElapsedTime()
     // const deltaTime = this.elapsedTime - this.previousTime
     // this.previousTime = this.elapsedTime
+    this.controls.update()
     if (this.tweenGroup) {
       this.tweenGroup.update()
     }
