@@ -106,7 +106,7 @@ class Canvas {
   }
   startAudio() {
     if (!this.sound.isPlaying) {
-      // this.sound.play()
+      this.sound.play()
       const yPosition = { y: 10 }
       const loadingCover = document.getElementById('loading-text-intro')
       this.tweenCover = new Tween(yPosition)
