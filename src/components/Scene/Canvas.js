@@ -40,8 +40,21 @@ class Canvas {
         position: { x: 0.05, y: 0.15, z: 3 },
         rotation: { x: -0.04, y: -0.04, z: 0 },
       },
+      frontView: {
+        position: {
+          x: 0,
+          y: 0.2,
+          z: 3.8,
+        },
+        rotation: {
+          x: 0,
+          y: 0,
+          z: 0,
+        },
+      },
     }
 
+    // build type
     this.materialType = {
       interior: {
         metalness: 0.5,
@@ -55,6 +68,20 @@ class Canvas {
       },
     }
 
+    // car position
+    this.porschDefaultValue = {
+      position: {
+        x: 0,
+        y: -0.6,
+        z: 0.5,
+      },
+      rotation: {
+        x: 0,
+        y: 270 * (Math.PI / 180),
+        z: 0,
+      },
+    }
+    this.porsche = null
     this.controls = new OrbitControls(this.camera, this.renderer.domElement)
     this.controls.enableDamping = true
     this.time = new THREE.Clock()
@@ -63,8 +90,8 @@ class Canvas {
     this.tweenGroup = new Group()
     this.isPlaying = true
     this.addObjects()
-    this.loadEnvironmentMap()
     this.loadModels()
+    this.loadEnvironmentMap()
     this.loadAudios()
     this.addLights()
     this.resize()
@@ -102,7 +129,7 @@ class Canvas {
         .onComplete(() => {
           startButton.style.display = 'block'
           loadingValue.parentNode.removeChild(loadingValue)
-          this.goToCameraView('sideView', 'exterior')
+          this.goToCameraView('frontView', 'exterior')
         })
       this.tweenGroup.add(this.tween)
       window.scroll(0, 0)
@@ -148,8 +175,11 @@ class Canvas {
           }
         }
       })
-      this.porsche.position.set(0, -0.6, 0.5)
-      this.porsche.rotation.y = 270 * (Math.PI / 180)
+      this.porsche.position.set(
+        this.porschDefaultValue.position.x,
+        this.porschDefaultValue.position.y,
+        this.porschDefaultValue.position.z,
+      )
       this.scene.add(this.porsche)
       this.clearScene()
     })
@@ -157,6 +187,7 @@ class Canvas {
   startAudio() {
     if (!this.sound.isPlaying) {
       this.sound.play()
+
       const yPosition = { y: 10 }
       const loadingCover = document.getElementById('loading-text-intro')
       this.tweenCover = new Tween(yPosition)
@@ -168,9 +199,10 @@ class Canvas {
           loadingCover.style.setProperty('transform', `translate( 0, ${yPosition.y}%)`)
         })
         .onComplete(function () {
-          loadingCover.parentNode.removeChild(document.getElementById('loading-text-intro'))
+          loadingCover.parentNode.removeChild(loadingCover)
         })
       this.tweenGroup.add(this.tweenCover)
+      this.porsche.rotation.y = this.porschDefaultValue.rotation.y
     }
   }
   goToCameraView(viewScene, materialType) {
@@ -203,6 +235,19 @@ class Canvas {
           x: this.cameraView.sideView.rotation.x,
           y: this.cameraView.sideView.rotation.y,
           z: this.cameraView.sideView.rotation.z,
+        }
+        break
+      }
+      case 'frontView': {
+        targetPosition = {
+          x: this.cameraView.frontView.position.x,
+          y: this.cameraView.frontView.position.y,
+          z: this.cameraView.frontView.position.z,
+        }
+        targetRotation = {
+          x: this.cameraView.frontView.rotation.x,
+          y: this.cameraView.frontView.rotation.y,
+          z: this.cameraView.frontView.rotation.z,
         }
         break
       }
@@ -258,9 +303,12 @@ class Canvas {
       light2Z: this.light2.position.z,
       light2Intensity: this.light2.intensity,
       light2Color: `#${this.light2.color.getHexString()}`,
-      metalness: 0.2,
-      roughness: 0.5,
-      envMapIntensity: 0.5,
+      metalness: this.materialType.exterior.metalness,
+      roughness: this.materialType.exterior.roughness,
+      envMapIntensity: this.materialType.exterior.envMapIntensity,
+      carRotationX: this.porschDefaultValue.rotation.x,
+      carRotationY: this.porschDefaultValue.rotation.y,
+      carRotationZ: this.porschDefaultValue.rotation.z,
     }
     if (this.controls) {
       this.controls.addEventListener('change', () => {
@@ -325,44 +373,90 @@ class Canvas {
     cameraFolder
       .add({ goToSideView: () => this.goToCameraView('sideView', 'exterior') }, 'goToSideView')
       .name('Go to Side View')
-
+    cameraFolder.close()
     // light 2 pos
     const light2Folder = this.gui.addFolder('Light')
-    light2Folder.add(this.settings, 'light2X', -20, 20, 0.01).onChange((value) => {
-      this.light2.position.x = parseFloat(value.toFixed(2))
-      this.settings.light2X = this.light2.position.x.toFixed(2)
-    })
-    light2Folder.add(this.settings, 'light2Y', -20, 20, 0.01).onChange((value) => {
-      this.light2.position.y = parseFloat(value.toFixed(2))
-      this.settings.light2X = this.light2.position.y.toFixed(2)
-    })
-    light2Folder.add(this.settings, 'light2Z', -20, 20, 0.01).onChange((value) => {
-      this.light2.position.z = parseFloat(value.toFixed(2))
-      this.settings.light2X = this.light2.position.z.toFixed(2)
-    })
+    light2Folder
+      .add(this.settings, 'light2X', -20, 20, 0.01)
+      .listen()
+      .onChange((value) => {
+        this.light2.position.x = parseFloat(value.toFixed(2))
+        this.settings.light2X = this.light2.position.x.toFixed(2)
+      })
+    light2Folder
+      .add(this.settings, 'light2Y', -20, 20, 0.01)
+      .listen()
+      .onChange((value) => {
+        this.light2.position.y = parseFloat(value.toFixed(2))
+        this.settings.light2X = this.light2.position.y.toFixed(2)
+      })
+    light2Folder
+      .add(this.settings, 'light2Z', -20, 20, 0.01)
+      .listen()
+      .onChange((value) => {
+        this.light2.position.z = parseFloat(value.toFixed(2))
+        this.settings.light2X = this.light2.position.z.toFixed(2)
+      })
     // Add intensity control
-    light2Folder.add(this.settings, 'light2Intensity', 0, 10, 0.01).onChange((value) => {
-      this.light2.intensity = parseFloat(value.toFixed(2))
-      this.settings.light2Intensity = this.light2.intensity.toFixed(2)
-    })
+    light2Folder
+      .add(this.settings, 'light2Intensity', 0, 10, 0.01)
+      .listen()
+      .onChange((value) => {
+        this.light2.intensity = parseFloat(value.toFixed(2))
+        this.settings.light2Intensity = this.light2.intensity.toFixed(2)
+      })
 
     // Add color control
-    light2Folder.addColor(this.settings, 'light2Color').onChange((value) => {
-      this.light2.color.set(value) // Update light color
-      this.settings.light2Color = value
-    })
+    light2Folder
+      .addColor(this.settings, 'light2Color')
+      .listen()
+      .onChange((value) => {
+        this.light2.color.set(value)
+        this.settings.light2Color = value
+      })
+    light2Folder.close()
 
     // Group material settings
-    const materialFolder = this.gui.addFolder('Car Settings')
-    materialFolder.add(this.settings, 'metalness', 0, 1, 0.01).onChange((value) => {
-      this.updateMaterialProperties(value, 'metalness')
-    })
-    materialFolder.add(this.settings, 'roughness', 0, 1, 0.01).onChange((value) => {
-      this.updateMaterialProperties(value, 'roughness')
-    })
-    materialFolder.add(this.settings, 'envMapIntensity', -10, 10, 0.01).onChange((value) => {
-      this.updateMaterialProperties(value, 'envMapIntensity')
-    })
+    const carFolder = this.gui.addFolder('Car Settings')
+    carFolder
+      .add(this.settings, 'metalness', 0, 1, 0.01)
+      .listen()
+      .onChange((value) => {
+        this.updateMaterialProperties(value, 'metalness')
+      })
+    carFolder
+      .add(this.settings, 'roughness', 0, 1, 0.01)
+      .listen()
+      .onChange((value) => {
+        this.updateMaterialProperties(value, 'roughness')
+      })
+    carFolder
+      .add(this.settings, 'envMapIntensity', -10, 10, 0.01)
+      .listen()
+      .onChange((value) => {
+        this.updateMaterialProperties(value, 'envMapIntensity')
+      })
+    carFolder
+      .add(this.settings, 'carRotationX', -10, 10, 0.01)
+      .listen()
+      .onChange((value) => {
+        this.porsche.rotation.x = parseFloat(value)
+        this.settings.carRotationX = value
+      })
+    carFolder
+      .add(this.settings, 'carRotationY', -10, 10, 0.01)
+      .listen()
+      .onChange((value) => {
+        this.porsche.rotation.y = parseFloat(value)
+        this.settings.carRotationY = value
+      })
+    carFolder
+      .add(this.settings, 'carRotationZ', -10, 10, 0.01)
+      .listen()
+      .onChange((value) => {
+        this.porsche.rotation.z = parseFloat(value)
+        this.settings.carRotationZ = value
+      })
   }
 
   updateMaterialProperties(value, property) {
@@ -406,7 +500,7 @@ class Canvas {
 
   addObjects() {
     this.material = new THREE.MeshStandardMaterial({
-      color: 0x333333,
+      // color: 0x333333,
       roughness: 0,
       metalness: 0.2,
       envMapIntensity: 0.2,
