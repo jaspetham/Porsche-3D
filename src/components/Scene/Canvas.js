@@ -3,8 +3,7 @@ import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js'
 import { Tween, Easing, Group } from 'three/examples/jsm/libs/tween.module.js'
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader'
 import { DRACOLoader } from 'three/examples/jsm/loaders/DRACOLoader.js'
-import vertex from '@/assets/shaders/vertex.glsl'
-import fragment from '@/assets/shaders/fragment.glsl'
+import { EXRLoader } from 'three/examples/jsm/Addons.js'
 import * as dat from 'lil-gui'
 // import gsap from 'gsap'
 class Canvas {
@@ -17,6 +16,10 @@ class Canvas {
     this.renderer.setPixelRatio(window.devicePixelRatio)
     this.renderer.setSize(this.width, this.height)
     this.renderer.setClearColor(0x000000, 1)
+    this.renderer.toneMapping = THREE.NeutralToneMapping
+    this.renderer.toneMappingExposure = 0.25
+    this.renderer.shadowMap.enabled = true
+    this.renderer.shadowMap.type = THREE.PCFSoftShadowMap
 
     this.container.appendChild(this.renderer.domElement)
 
@@ -26,7 +29,7 @@ class Canvas {
       0.001,
       1000,
     )
-    this.camera.position.set(0, 0, 1)
+    this.camera.position.set(0, 0, 3)
 
     this.controls = new OrbitControls(this.camera, this.renderer.domElement)
     this.controls.update()
@@ -36,14 +39,15 @@ class Canvas {
     this.previousTime = 0
     this.tweenGroup = new Group()
     this.isPlaying = true
+    this.addObjects()
+    this.loadEnvironmentMap()
     this.loadModels()
     this.loadAudios()
-    // this.addObjects()
     this.addLights()
     this.resize()
     this.render()
     this.setupResize()
-    // this.settings()
+    this.settings()
   }
 
   clearScene() {
@@ -59,21 +63,11 @@ class Canvas {
         Tween.remove(this)
       })
   }
-
-  loadAudios() {
-    this.listener = new THREE.AudioListener()
-    this.camera.add(this.listener)
-    this.sound = new THREE.Audio(this.listener)
-    this.audioLoader = new THREE.AudioLoader()
-    this.audioLoader.load('audio/porsche_updated.mp3', (buffer) => {
-      this.sound.setBuffer(buffer)
-    })
-  }
-  loadModels() {
-    const loadingManager = new THREE.LoadingManager()
+  loadEnvironmentMap() {
+    this.loadingManager = new THREE.LoadingManager()
     const startButton = document.getElementById('start-button')
     const loadingValue = document.getElementById('loading-value')
-    loadingManager.onLoad = () => {
+    this.loadingManager.onLoad = () => {
       const progress = { value: 0 }
       this.tween = new Tween(progress)
         .to({ value: 100 }, 900)
@@ -90,15 +84,47 @@ class Canvas {
       window.scroll(0, 0)
     }
 
+    this.environmentLoader = new EXRLoader(this.loadingManager).load(
+      'models/studio.exr',
+      (environmentMap) => {
+        environmentMap.mapping = THREE.EquirectangularReflectionMapping
+        this.scene.background = environmentMap
+        this.scene.environment = environmentMap
+      },
+    )
+  }
+  loadAudios() {
+    this.listener = new THREE.AudioListener()
+    this.camera.add(this.listener)
+    this.sound = new THREE.Audio(this.listener)
+    this.audioLoader = new THREE.AudioLoader()
+    this.audioLoader.load('audio/porsche_updated.mp3', (buffer) => {
+      this.sound.setBuffer(buffer)
+    })
+  }
+  loadModels() {
     this.dracoLoader = new DRACOLoader()
     this.dracoLoader.setDecoderPath('/draco/')
     this.dracoLoader.setDecoderConfig({ type: 'js' })
-    this.gltfLoader = new GLTFLoader(loadingManager)
+    this.gltfLoader = new GLTFLoader(this.loadingManager)
     this.gltfLoader.setDRACOLoader(this.dracoLoader)
 
     this.gltfLoader.load('/models/porsche.glb', (gltf) => {
       this.porsche = gltf.scene
-      this.porsche.position.set(0, -0.6, -3)
+      this.porsche.traverse((child) => {
+        child.castShadow = true
+        child.receiveShadow = true
+        if (child.material) {
+          if (!child.material.envMap) {
+            child.material.envMap = this.scene.environment
+            child.material.metalness = 0.5
+            child.material.roughness = 0
+            child.material.envMapIntensity = 1
+            child.material.needsUpdate = true
+          }
+        }
+      })
+      this.porsche.position.set(0, -0.6, 0.5)
       this.porsche.rotation.y = 270 * (Math.PI / 180)
       this.scene.add(this.porsche)
       this.clearScene()
@@ -128,115 +154,100 @@ class Canvas {
       cameraX: this.camera.position.x,
       cameraY: this.camera.position.y,
       cameraZ: this.camera.position.z,
-      light1X: this.light1.position.x,
-      light1Y: this.light1.position.y,
-      light1Z: this.light1.position.z,
       light2X: this.light2.position.x,
       light2Y: this.light2.position.y,
       light2Z: this.light2.position.z,
-      // modelPositionX: this.porsche ? this.porsche.position.x : 0,
-      // modelPositionY: this.porsche ? this.porsche.position.y : -0.6,
-      // modelPositionZ: this.porsche ? this.porsche.position.z : -3,
-      // modelRotationX: this.porsche ? this.porsche.rotation.x : 0,
-      // modelRotationY: this.porsche ? this.porsche.rotation.y : 270 * (Math.PI / 180),
-      // modelRotationZ: this.porsche ? this.porsche.rotation.z : 0,
+      light2Intensity: this.light2.intensity,
+      light2Color: `#${this.light2.color.getHexString()}`,
+      metalness: 0.2,
+      roughness: 0.5,
+      envMapIntensity: 0.5,
     }
+
+    this.controls.addEventListener('change', () => {
+      this.updateSettings()
+    })
 
     this.gui = new dat.GUI()
 
+    const cameraFolder = this.gui.addFolder('Camera')
     // camera position
-    this.gui.add(this.settings, 'cameraX', -10, 10, 0.01).onChange((value) => {
-      this.camera.position.x = parseFloat(value.toFixed(2))
-      this.settings.cameraX = this.camera.position.x.toFixed(2)
-    })
+    // Camera position controls
+    cameraFolder
+      .add(this.settings, 'cameraX', -10, 10, 0.01)
+      .listen()
+      .onChange((value) => {
+        this.camera.position.x = parseFloat(value.toFixed(2))
+        this.settings.cameraX = this.camera.position.x.toFixed(2)
+      })
 
-    this.gui.add(this.settings, 'cameraY', -10, 10, 0.01).onChange((value) => {
-      this.camera.position.y = parseFloat(value.toFixed(2))
-      this.settings.cameraY = this.camera.position.y.toFixed(2)
-    })
+    cameraFolder
+      .add(this.settings, 'cameraY', -10, 10, 0.01)
+      .listen()
+      .onChange((value) => {
+        this.camera.position.y = parseFloat(value.toFixed(2))
+        this.settings.cameraY = this.camera.position.y.toFixed(2)
+      })
 
-    this.gui.add(this.settings, 'cameraZ', -10, 10, 0.01).onChange((value) => {
-      this.camera.position.z = parseFloat(value.toFixed(2))
-      this.settings.cameraZ = this.camera.position.z.toFixed(2)
-    })
-
-    // light 1 position
-    this.gui.add(this.settings, 'light1X', -10, 10, 0.01).onChange((value) => {
-      this.light1.position.z = parseFloat(value.toFixed(2))
-      this.settings.light1X = this.light1.position.x.toFixed(2)
-    })
-    this.gui.add(this.settings, 'light1Y', -10, 10, 0.01).onChange((value) => {
-      this.light1.position.z = parseFloat(value.toFixed(2))
-      this.settings.light1Y = this.light1.position.y.toFixed(2)
-    })
-    this.gui.add(this.settings, 'light1Z', -10, 10, 0.01).onChange((value) => {
-      this.light1.position.z = parseFloat(value.toFixed(2))
-      this.settings.light1Z = this.light1.position.z.toFixed(2)
-    })
-
+    cameraFolder
+      .add(this.settings, 'cameraZ', -10, 10, 0.01)
+      .listen()
+      .onChange((value) => {
+        this.camera.position.z = parseFloat(value.toFixed(2))
+        this.settings.cameraZ = this.camera.position.z.toFixed(2)
+      })
+    const light2Folder = this.gui.addFolder('Light')
     // light 2 pos
-    this.gui.add(this.settings, 'light2X', -10, 10, 0.01).onChange((value) => {
-      this.light2.position.z = parseFloat(value.toFixed(2))
+    light2Folder.add(this.settings, 'light2X', -20, 20, 0.01).onChange((value) => {
+      this.light2.position.x = parseFloat(value.toFixed(2))
       this.settings.light2X = this.light2.position.x.toFixed(2)
     })
-    this.gui.add(this.settings, 'light2Y', -10, 10, 0.01).onChange((value) => {
-      this.light2.position.z = parseFloat(value.toFixed(2))
+    light2Folder.add(this.settings, 'light2Y', -20, 20, 0.01).onChange((value) => {
+      this.light2.position.y = parseFloat(value.toFixed(2))
       this.settings.light2X = this.light2.position.y.toFixed(2)
     })
-    this.gui.add(this.settings, 'light2Z', -10, 10, 0.01).onChange((value) => {
+    light2Folder.add(this.settings, 'light2Z', -20, 20, 0.01).onChange((value) => {
       this.light2.position.z = parseFloat(value.toFixed(2))
       this.settings.light2X = this.light2.position.z.toFixed(2)
     })
+    // Add intensity control
+    light2Folder.add(this.settings, 'light2Intensity', 0, 10, 0.01).onChange((value) => {
+      this.light2.intensity = parseFloat(value.toFixed(2))
+      this.settings.light2Intensity = this.light2.intensity.toFixed(2)
+    })
 
-    // model position
-    // this.gui.add(this.settings, 'modelPositionX', -10, 10, 0.01).onChange((value) => {
-    //   if (this.porsche) {
-    //     this.porsche.position.x = parseFloat(value.toFixed(2))
-    //     this.settings.modelPositionX = this.porsche.position.x.toFixed(2)
-    //   }
-    // })
+    // Add color control
+    light2Folder.addColor(this.settings, 'light2Color').onChange((value) => {
+      this.light2.color.set(value) // Update light color
+      this.settings.light2Color = value
+    })
 
-    // this.gui.add(this.settings, 'modelPositionY', -10, 10, 0.01).onChange((value) => {
-    //   if (this.porsche) {
-    //     this.porsche.position.y = parseFloat(value.toFixed(2))
-    //     this.settings.modelPositionY = this.porsche.position.y.toFixed(2)
-    //   }
-    // })
+    // Group material settings
+    const materialFolder = this.gui.addFolder('Car Settings')
+    materialFolder.add(this.settings, 'metalness', -10, 10, 0.01).onChange((value) => {
+      this.updateMaterialProperties(value, 'metalness')
+    })
+    materialFolder.add(this.settings, 'roughness', -10, 10, 0.01).onChange((value) => {
+      this.updateMaterialProperties(value, 'roughness')
+    })
+    materialFolder.add(this.settings, 'envMapIntensity', -10, 10, 0.01).onChange((value) => {
+      this.updateMaterialProperties(value, 'envMapIntensity')
+    })
+  }
 
-    // this.gui.add(this.settings, 'modelPositionZ', -10, 10, 0.01).onChange((value) => {
-    //   if (this.porsche) {
-    //     this.porsche.position.z = parseFloat(value.toFixed(2))
-    //     this.settings.modelPositionZ = this.porsche.position.z.toFixed(2)
-    //   }
-    // })
-
-    // // model rotation
-    // this.gui
-    //   .add(this.settings, 'modelRotationX', -Math.PI, Math.PI, 0.01)
-    //   .onChange((value) => {
-    //     if (this.porsche) {
-    //       this.porsche.rotation.x = parseFloat(value.toFixed(2))
-    //     }
-    //   })
-    //   .listen()
-
-    // this.gui
-    //   .add(this.settings, 'modelRotationY', -Math.PI, Math.PI, 0.01)
-    //   .onChange((value) => {
-    //     if (this.porsche) {
-    //       this.porsche.rotation.y = parseFloat(value.toFixed(2))
-    //     }
-    //   })
-    //   .listen()
-
-    // this.gui
-    //   .add(this.settings, 'modelRotationZ', -Math.PI, Math.PI, 0.01)
-    //   .onChange((value) => {
-    //     if (this.porsche) {
-    //       this.porsche.rotation.z = parseFloat(value.toFixed(2))
-    //     }
-    //   })
-    //   .listen()
+  updateMaterialProperties(value, property) {
+    this.porsche.traverse((child) => {
+      if (child.material) {
+        if (property === 'metalness') {
+          child.material.metalness = parseFloat(value)
+        } else if (property === 'roughness') {
+          child.material.roughness = parseFloat(value)
+        } else if (property === 'envMapIntensity') {
+          child.material.envMapIntensity = parseFloat(value)
+        }
+        child.material.needsUpdate = true
+      }
+    })
   }
 
   setupResize() {
@@ -252,28 +263,36 @@ class Canvas {
   }
 
   addLights() {
-    this.light1 = new THREE.AmbientLight(0xffffff, 0.5)
-    this.scene.add(this.light1)
-
-    this.light2 = new THREE.DirectionalLight(0xffffff, 0.5)
-    this.light2.position.set(0.5, 0, 0.866)
+    const ambientLight = new THREE.AmbientLight(0xffffff, 2) // Low-intensity ambient light
+    this.scene.add(ambientLight)
+    this.light2 = new THREE.DirectionalLight(0xffffff, 5)
+    this.light2.position.set(-0.16, 20, 12)
+    this.light2.castShadow = true
+    this.light2.shadow.mapSize.width = 1024
+    this.light2.shadow.mapSize.height = 1024
+    this.light2.shadow.bias = -0.001
     this.scene.add(this.light2)
   }
 
   addObjects() {
-    this.material = new THREE.ShaderMaterial({
-      side: THREE.DoubleSide,
-      uniforms: {
-        time: { value: 0 },
-        resolution: { value: new THREE.Vector4() },
-      },
-      vertexShader: vertex,
-      fragmentShader: fragment,
+    this.material = new THREE.MeshStandardMaterial({
+      roughness: 0,
+      envMapIntensity: 0.2,
     })
 
-    this.geometry = new THREE.PlaneGeometry(1, 1, 1, 1)
+    this.geometry = new THREE.PlaneGeometry(20, 20, 1, 2)
     this.plane = new THREE.Mesh(this.geometry, this.material)
+    this.plane.rotation.x = -Math.PI / 2
+    this.plane.receiveShadow = true
+    this.plane.position.y = -0.7
+    this.plane.position.z = -3
     this.scene.add(this.plane)
+  }
+
+  updateSettings() {
+    this.settings.cameraX = this.camera.position.x.toFixed(2)
+    this.settings.cameraY = this.camera.position.y.toFixed(2)
+    this.settings.cameraZ = this.camera.position.z.toFixed(2)
   }
 
   stop() {
@@ -292,7 +311,10 @@ class Canvas {
     this.elapsedTime = this.time.getElapsedTime()
     // const deltaTime = this.elapsedTime - this.previousTime
     // this.previousTime = this.elapsedTime
+
     this.controls.update()
+    this.updateSettings()
+
     if (this.tweenGroup) {
       this.tweenGroup.update()
     }
