@@ -118,7 +118,7 @@ class Canvas {
           if (!child.material.envMap) {
             child.material.envMap = this.scene.environment
             child.material.metalness = 0.5
-            child.material.roughness = 0
+            child.material.roughness = 0.05
             child.material.envMapIntensity = 1
             child.material.needsUpdate = true
           }
@@ -276,13 +276,16 @@ class Canvas {
 
   addObjects() {
     this.material = new THREE.MeshStandardMaterial({
+      color: 0x333333,
       roughness: 0,
+      metalness: 0.2,
       envMapIntensity: 0.2,
     })
 
-    this.geometry = new THREE.PlaneGeometry(20, 20, 1, 2)
+    this.geometry = new THREE.PlaneGeometry(500, 500, 1)
     this.plane = new THREE.Mesh(this.geometry, this.material)
     this.plane.rotation.x = -Math.PI / 2
+    this.plane.frustumCulled = true
     this.plane.receiveShadow = true
     this.plane.position.y = -0.7
     this.plane.position.z = -3
