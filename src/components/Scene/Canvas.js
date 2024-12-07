@@ -5,7 +5,7 @@ import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader'
 import { DRACOLoader } from 'three/examples/jsm/loaders/DRACOLoader.js'
 import { EXRLoader } from 'three/examples/jsm/Addons.js'
 import * as dat from 'lil-gui'
-// import gsap from 'gsap'
+import gsap from 'gsap'
 class Canvas {
   constructor(options) {
     this.scene = new THREE.Scene()
@@ -29,10 +29,33 @@ class Canvas {
       0.001,
       1000,
     )
-    this.camera.position.set(0, 0, 3)
+
+    // camera view
+    this.cameraView = {
+      driverView: {
+        position: { x: 0.3, y: 0.32, z: 0.88 },
+        rotation: { x: -1.55, y: 1.17, z: 1.55 },
+      },
+      sideView: {
+        position: { x: 0.05, y: 0.15, z: 3 },
+        rotation: { x: -0.04, y: -0.04, z: 0 },
+      },
+    }
+
+    this.materialType = {
+      interior: {
+        metalness: 0.5,
+        roughness: 0.5,
+        envMapIntensity: 2,
+      },
+      exterior: {
+        metalness: 0.45,
+        roughness: 0.15,
+        envMapIntensity: 0.5,
+      },
+    }
 
     this.controls = new OrbitControls(this.camera, this.renderer.domElement)
-    this.controls.update()
     this.controls.enableDamping = true
     this.time = new THREE.Clock()
     this.elapsedTime = 0
@@ -79,6 +102,7 @@ class Canvas {
         .onComplete(() => {
           startButton.style.display = 'block'
           loadingValue.parentNode.removeChild(loadingValue)
+          this.goToCameraView('sideView', 'exterior')
         })
       this.tweenGroup.add(this.tween)
       window.scroll(0, 0)
@@ -117,9 +141,9 @@ class Canvas {
         if (child.material) {
           if (!child.material.envMap) {
             child.material.envMap = this.scene.environment
-            child.material.metalness = 0.5
-            child.material.roughness = 0.05
-            child.material.envMapIntensity = 1
+            child.material.metalness = this.materialType.exterior.metalness
+            child.material.roughness = this.materialType.exterior.roughness
+            child.material.envMapIntensity = this.materialType.exterior.envMapIntensity
             child.material.needsUpdate = true
           }
         }
@@ -149,11 +173,86 @@ class Canvas {
       this.tweenGroup.add(this.tweenCover)
     }
   }
+  goToCameraView(viewScene, materialType) {
+    let targetPosition, targetRotation
+    const transSec = 1.5
+    const easeType = 'expo.inOut'
+
+    switch (viewScene) {
+      case 'driverView': {
+        targetPosition = {
+          x: this.cameraView.driverView.position.x,
+          y: this.cameraView.driverView.position.y,
+          z: this.cameraView.driverView.position.z,
+        }
+        targetRotation = {
+          x: this.cameraView.driverView.rotation.x,
+          y: this.cameraView.driverView.rotation.y,
+          z: this.cameraView.driverView.rotation.z,
+        }
+
+        break
+      }
+      case 'sideView': {
+        targetPosition = {
+          x: this.cameraView.sideView.position.x,
+          y: this.cameraView.sideView.position.y,
+          z: this.cameraView.sideView.position.z,
+        }
+        targetRotation = {
+          x: this.cameraView.sideView.rotation.x,
+          y: this.cameraView.sideView.rotation.y,
+          z: this.cameraView.sideView.rotation.z,
+        }
+        break
+      }
+    }
+    const animation = gsap.to(this.camera.position, {
+      duration: transSec,
+      ease: easeType,
+      x: targetPosition.x,
+      y: targetPosition.y,
+      z: targetPosition.z,
+      onUpdate: () => {
+        this.camera.position.set(
+          this.camera.position.x,
+          this.camera.position.y,
+          this.camera.position.z,
+        )
+        if (animation.progress() > 0.5) {
+          this.updateMaterialProperties(this.materialType[materialType].metalness, 'metalness')
+          this.updateMaterialProperties(this.materialType[materialType].roughness, 'roughness')
+          this.updateMaterialProperties(
+            this.materialType[materialType].envMapIntensity,
+            'envMapIntensity',
+          )
+        }
+      },
+    })
+
+    gsap.to(this.camera.rotation, {
+      duration: transSec,
+      ease: easeType,
+      x: targetRotation.x,
+      y: targetRotation.y,
+      z: targetRotation.z,
+      onUpdate: () => {
+        this.camera.rotation.set(
+          this.camera.rotation.x,
+          this.camera.rotation.y,
+          this.camera.rotation.z,
+        )
+      },
+    })
+  }
   settings() {
     this.settings = {
-      cameraX: this.camera.position.x,
-      cameraY: this.camera.position.y,
-      cameraZ: this.camera.position.z,
+      cameraX: this.cameraView.sideView.position.x,
+      cameraY: this.cameraView.sideView.position.y,
+      cameraZ: this.cameraView.sideView.position.z,
+      cameraRotX: this.cameraView.sideView.rotation.x,
+      cameraRotY: this.cameraView.sideView.rotation.y,
+      cameraRotZ: this.cameraView.sideView.rotation.z,
       light2X: this.light2.position.x,
       light2Y: this.light2.position.y,
       light2Z: this.light2.position.z,
@@ -163,16 +262,16 @@ class Canvas {
       roughness: 0.5,
       envMapIntensity: 0.5,
     }
-
-    this.controls.addEventListener('change', () => {
-      this.updateSettings()
-    })
+    if (this.controls) {
+      this.controls.addEventListener('change', () => {
+        this.updateSettings()
+      })
+    }
 
     this.gui = new dat.GUI()
 
-    const cameraFolder = this.gui.addFolder('Camera')
-    // camera position
     // Camera position controls
+    const cameraFolder = this.gui.addFolder('Camera')
     cameraFolder
       .add(this.settings, 'cameraX', -10, 10, 0.01)
       .listen()
@@ -196,8 +295,39 @@ class Canvas {
         this.camera.position.z = parseFloat(value.toFixed(2))
         this.settings.cameraZ = this.camera.position.z.toFixed(2)
       })
-    const light2Folder = this.gui.addFolder('Light')
+    cameraFolder
+      .add(this.settings, 'cameraRotX', -10, 10, 0.01)
+      .listen()
+      .onChange((value) => {
+        this.camera.rotation.x = parseFloat(value.toFixed(2))
+        this.settings.cameraRotX = this.camera.rotation.x.toFixed(2)
+      })
+    cameraFolder
+      .add(this.settings, 'cameraRotY', -10, 10, 0.01)
+      .listen()
+      .onChange((value) => {
+        this.camera.rotation.z = parseFloat(value.toFixed(2))
+        this.settings.cameraRotY = this.camera.rotation.z.toFixed(2)
+      })
+    cameraFolder
+      .add(this.settings, 'cameraRotZ', -10, 10, 0.01)
+      .listen()
+      .onChange((value) => {
+        this.camera.rotation.z = parseFloat(value.toFixed(2))
+        this.settings.cameraRotZ = this.camera.rotation.z.toFixed(2)
+      })
+    cameraFolder
+      .add(
+        { goToDriverView: () => this.goToCameraView('driverView', 'interior') },
+        'goToDriverView',
+      )
+      .name('Go to Driver View')
+    cameraFolder
+      .add({ goToSideView: () => this.goToCameraView('sideView', 'exterior') }, 'goToSideView')
+      .name('Go to Side View')
+
     // light 2 pos
+    const light2Folder = this.gui.addFolder('Light')
     light2Folder.add(this.settings, 'light2X', -20, 20, 0.01).onChange((value) => {
       this.light2.position.x = parseFloat(value.toFixed(2))
       this.settings.light2X = this.light2.position.x.toFixed(2)
@@ -224,10 +354,10 @@ class Canvas {
 
     // Group material settings
     const materialFolder = this.gui.addFolder('Car Settings')
-    materialFolder.add(this.settings, 'metalness', -10, 10, 0.01).onChange((value) => {
+    materialFolder.add(this.settings, 'metalness', 0, 1, 0.01).onChange((value) => {
       this.updateMaterialProperties(value, 'metalness')
     })
-    materialFolder.add(this.settings, 'roughness', -10, 10, 0.01).onChange((value) => {
+    materialFolder.add(this.settings, 'roughness', 0, 1, 0.01).onChange((value) => {
       this.updateMaterialProperties(value, 'roughness')
     })
     materialFolder.add(this.settings, 'envMapIntensity', -10, 10, 0.01).onChange((value) => {
@@ -296,6 +426,9 @@ class Canvas {
     this.settings.cameraX = this.camera.position.x.toFixed(2)
     this.settings.cameraY = this.camera.position.y.toFixed(2)
     this.settings.cameraZ = this.camera.position.z.toFixed(2)
+    this.settings.cameraRotX = this.camera.rotation.x.toFixed(2)
+    this.settings.cameraRotY = this.camera.rotation.y.toFixed(2)
+    this.settings.cameraRotZ = this.camera.rotation.z.toFixed(2)
   }
 
   stop() {
@@ -314,8 +447,7 @@ class Canvas {
     this.elapsedTime = this.time.getElapsedTime()
     // const deltaTime = this.elapsedTime - this.previousTime
     // this.previousTime = this.elapsedTime
-
-    this.controls.update()
+    // this.controls.update()
     this.updateSettings()
 
     if (this.tweenGroup) {
