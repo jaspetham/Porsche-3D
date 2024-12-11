@@ -42,14 +42,14 @@ class Canvas {
       },
       frontView: {
         position: {
-          x: 0,
-          y: 0.2,
-          z: 3.8,
+          x: -3.15,
+          y: 0.25,
+          z: 0.5,
         },
         rotation: {
-          x: 0,
-          y: 0,
-          z: 0,
+          x: -1.42,
+          y: -1.42,
+          z: -1.42,
         },
       },
     }
@@ -84,6 +84,7 @@ class Canvas {
     this.porsche = null
     this.controls = new OrbitControls(this.camera, this.renderer.domElement)
     this.controls.enableDamping = true
+    this.controls.maxPolarAngle = Math.PI / 2
     this.time = new THREE.Clock()
     this.elapsedTime = 0
     this.previousTime = 0
@@ -129,7 +130,7 @@ class Canvas {
         .onComplete(() => {
           startButton.style.display = 'block'
           loadingValue.parentNode.removeChild(loadingValue)
-          this.goToCameraView('frontView', 'exterior')
+          this.goToCameraView('sideView', 'exterior')
         })
       this.tweenGroup.add(this.tween)
       window.scroll(0, 0)
@@ -180,31 +181,12 @@ class Canvas {
         this.porschDefaultValue.position.y,
         this.porschDefaultValue.position.z,
       )
+      this.porsche.rotation.y = 270 * (Math.PI / 180)
       this.scene.add(this.porsche)
       this.clearScene()
     })
   }
-  startAudio() {
-    if (!this.sound.isPlaying) {
-      this.sound.play()
 
-      const yPosition = { y: 10 }
-      const loadingCover = document.getElementById('loading-text-intro')
-      this.tweenCover = new Tween(yPosition)
-        .to({ y: 100 }, 900)
-        .delay(2000)
-        .easing(Easing.Quadratic.InOut)
-        .start()
-        .onUpdate(function () {
-          loadingCover.style.setProperty('transform', `translate( 0, ${yPosition.y}%)`)
-        })
-        .onComplete(function () {
-          loadingCover.parentNode.removeChild(loadingCover)
-        })
-      this.tweenGroup.add(this.tweenCover)
-      this.porsche.rotation.y = this.porschDefaultValue.rotation.y
-    }
-  }
   goToCameraView(viewScene, materialType) {
     let targetPosition, targetRotation
     const transSec = 1.5
@@ -290,6 +272,28 @@ class Canvas {
       },
     })
   }
+  startAudio() {
+    if (!this.sound.isPlaying) {
+      // this.sound.play()
+      let that = this
+      const yPosition = { y: 10 }
+      const transitionDelay = 2000
+      const loadingCover = document.getElementById('loading-text-intro')
+      this.tweenCover = new Tween(yPosition)
+        .to({ y: 100 }, 900)
+        .delay(transitionDelay)
+        .easing(Easing.Quadratic.InOut)
+        .start()
+        .onUpdate(function () {
+          loadingCover.style.setProperty('transform', `translate( 0, ${yPosition.y}%)`)
+        })
+        .onComplete(function () {
+          loadingCover.parentNode.removeChild(loadingCover)
+          that.goToCameraView('frontView', 'exterior')
+        })
+      this.tweenGroup.add(this.tweenCover)
+    }
+  }
   settings() {
     this.settings = {
       cameraX: this.cameraView.sideView.position.x,
@@ -354,8 +358,8 @@ class Canvas {
       .add(this.settings, 'cameraRotY', -10, 10, 0.01)
       .listen()
       .onChange((value) => {
-        this.camera.rotation.z = parseFloat(value.toFixed(2))
-        this.settings.cameraRotY = this.camera.rotation.z.toFixed(2)
+        this.camera.rotation.y = parseFloat(value.toFixed(2))
+        this.settings.cameraRotY = this.camera.rotation.y.toFixed(2)
       })
     cameraFolder
       .add(this.settings, 'cameraRotZ', -10, 10, 0.01)
@@ -373,7 +377,10 @@ class Canvas {
     cameraFolder
       .add({ goToSideView: () => this.goToCameraView('sideView', 'exterior') }, 'goToSideView')
       .name('Go to Side View')
-    cameraFolder.close()
+    cameraFolder
+      .add({ goToFrontView: () => this.goToCameraView('frontView', 'exterior') }, 'goToFrontView')
+      .name('Go to Front View')
+    // cameraFolder.close()
     // light 2 pos
     const light2Folder = this.gui.addFolder('Light')
     light2Folder
@@ -457,6 +464,7 @@ class Canvas {
         this.porsche.rotation.z = parseFloat(value)
         this.settings.carRotationZ = value
       })
+    carFolder.close()
   }
 
   updateMaterialProperties(value, property) {
@@ -500,7 +508,6 @@ class Canvas {
 
   addObjects() {
     this.material = new THREE.MeshStandardMaterial({
-      // color: 0x333333,
       roughness: 0,
       metalness: 0.2,
       envMapIntensity: 0.2,
