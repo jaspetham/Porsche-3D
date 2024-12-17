@@ -43,7 +43,7 @@ class Canvas {
       frontView: {
         position: {
           x: -3.15,
-          y: 0.25,
+          y: 0.1,
           z: 0.5,
         },
         rotation: {
@@ -62,9 +62,9 @@ class Canvas {
         envMapIntensity: 2,
       },
       exterior: {
-        metalness: 0.45,
-        roughness: 0.15,
-        envMapIntensity: 0.5,
+        metalness: 0.5,
+        roughness: 0.3,
+        envMapIntensity: 1,
       },
     }
 
@@ -130,7 +130,7 @@ class Canvas {
         .onComplete(() => {
           startButton.style.display = 'block'
           loadingValue.parentNode.removeChild(loadingValue)
-          this.goToCameraView('sideView', 'exterior')
+          this.goToCameraView('frontView', 'exterior')
         })
       this.tweenGroup.add(this.tween)
       window.scroll(0, 0)
@@ -274,7 +274,7 @@ class Canvas {
   }
   startAudio() {
     if (!this.sound.isPlaying) {
-      // this.sound.play()
+      this.sound.play()
       let that = this
       const yPosition = { y: 10 }
       const transitionDelay = 2000
@@ -290,10 +290,46 @@ class Canvas {
         .onComplete(function () {
           loadingCover.parentNode.removeChild(loadingCover)
           that.goToCameraView('frontView', 'exterior')
+          that.rotateAroundView(that.porsche.position.clone(), 460)
         })
       this.tweenGroup.add(this.tweenCover)
     }
   }
+
+  rotateAroundView(target, endAngle) {
+    let that = this
+    const deltaX = that.camera.position.x - target.x
+    const deltaZ = that.camera.position.z - target.z
+    let startAngle = THREE.MathUtils.radToDeg(Math.atan2(deltaZ, deltaX))
+    const currentRadius = Math.sqrt(deltaX * deltaX + deltaZ * deltaZ)
+    gsap.to(
+      { angle: startAngle },
+      {
+        angle: endAngle,
+        duration: 2,
+        ease: 'power2.inOut',
+        onUpdate: function () {
+          const angleInRadians = THREE.MathUtils.degToRad(this.targets()[0].angle)
+          that.camera.position.x = target.x + currentRadius * Math.cos(angleInRadians)
+          that.camera.position.z = target.z + currentRadius * Math.sin(angleInRadians) * 0.8
+          that.camera.lookAt(target)
+          // that.camera.rotation.x = -0.03
+          // that.camera.rotation.y = -0.18
+          // that.camera.rotation.z = 9
+        },
+      },
+    )
+
+    // gsap.to(that.camera.rotation, {
+    //   x: -0.03,
+    //   y: -0.18,
+    //   z: 0,
+    //   duration: 2,
+    //   delay: 2,
+    //   ease: 'power2.out',
+    // })
+  }
+
   settings() {
     this.settings = {
       cameraX: this.cameraView.sideView.position.x,
@@ -380,6 +416,14 @@ class Canvas {
     cameraFolder
       .add({ goToFrontView: () => this.goToCameraView('frontView', 'exterior') }, 'goToFrontView')
       .name('Go to Front View')
+    cameraFolder
+      .add(
+        {
+          rotateAroundView: () => this.rotateAroundView(this.porsche.position.clone(), 460),
+        },
+        'rotateAroundView',
+      )
+      .name('Rotate Around View')
     // cameraFolder.close()
     // light 2 pos
     const light2Folder = this.gui.addFolder('Light')

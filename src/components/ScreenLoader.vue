@@ -16,19 +16,20 @@ const startAnimation = () => {
 </template>
 <style lang="scss" scoped>
 #loading-text-intro{
-    z-index: 3;
-    position: absolute;
-    width: 100vw;
-    height: 100%;
-    font-family: 'Josefin Sans', sans-serif;
-    display: flex;
-    align-content: center;
-    justify-content: center;
-    align-items: center;
-    font-size: 24px;
-    font-weight: 100;
+  z-index: 3;
+  position: absolute;
+  width: 100vw;
+  height: 100%;
+  font-family: 'Josefin Sans', sans-serif;
+  display: flex;
+  align-content: center;
+  justify-content: center;
+  align-items: center;
+  font-size: 24px;
+  font-weight: 100;
 	color:#f9f0ec;
 	background: radial-gradient(circle at center center,#5d5d5d 0,#090909 58%);
+  // display:none;
 }
 
 #start-button{
