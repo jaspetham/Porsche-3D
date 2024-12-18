@@ -42,14 +42,14 @@ class Canvas {
       },
       frontView: {
         position: {
-          x: -3.15,
-          y: 0.1,
-          z: 0.5,
+          x: -3,
+          y: 0.3,
+          z: 1.15,
         },
         rotation: {
-          x: -1.42,
-          y: -1.42,
-          z: -1.42,
+          x: -0.1,
+          y: -1.2,
+          z: -0.1,
         },
       },
     }
@@ -274,7 +274,7 @@ class Canvas {
   }
   startAudio() {
     if (!this.sound.isPlaying) {
-      this.sound.play()
+      // this.sound.play()
       let that = this
       const yPosition = { y: 10 }
       const transitionDelay = 2000
@@ -306,28 +306,17 @@ class Canvas {
       { angle: startAngle },
       {
         angle: endAngle,
-        duration: 2,
+        duration: 3,
         ease: 'power2.inOut',
         onUpdate: function () {
           const angleInRadians = THREE.MathUtils.degToRad(this.targets()[0].angle)
           that.camera.position.x = target.x + currentRadius * Math.cos(angleInRadians)
-          that.camera.position.z = target.z + currentRadius * Math.sin(angleInRadians) * 0.8
+          that.camera.position.y = 0.5
+          that.camera.position.z = target.z + currentRadius * Math.sin(angleInRadians) * 0.82
           that.camera.lookAt(target)
-          // that.camera.rotation.x = -0.03
-          // that.camera.rotation.y = -0.18
-          // that.camera.rotation.z = 9
         },
       },
     )
-
-    // gsap.to(that.camera.rotation, {
-    //   x: -0.03,
-    //   y: -0.18,
-    //   z: 0,
-    //   duration: 2,
-    //   delay: 2,
-    //   ease: 'power2.out',
-    // })
   }
 
   settings() {
