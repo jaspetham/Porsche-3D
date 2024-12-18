@@ -279,6 +279,7 @@ class Canvas {
       const yPosition = { y: 10 }
       const transitionDelay = 2000
       const loadingCover = document.getElementById('loading-text-intro')
+      const mainContainer = document.getElementById('main-container')
       this.tweenCover = new Tween(yPosition)
         .to({ y: 100 }, 900)
         .delay(transitionDelay)
@@ -291,6 +292,7 @@ class Canvas {
           loadingCover.parentNode.removeChild(loadingCover)
           that.goToCameraView('frontView', 'exterior')
           that.rotateAroundView(that.porsche.position.clone(), 460)
+          mainContainer.classList.add('show')
         })
       this.tweenGroup.add(this.tweenCover)
     }
@@ -311,9 +313,12 @@ class Canvas {
         onUpdate: function () {
           const angleInRadians = THREE.MathUtils.degToRad(this.targets()[0].angle)
           that.camera.position.x = target.x + currentRadius * Math.cos(angleInRadians)
-          that.camera.position.y = 0.5
+          // that.camera.position.y = 0.8
           that.camera.position.z = target.z + currentRadius * Math.sin(angleInRadians) * 0.82
           that.camera.lookAt(target)
+          // that.camera.rotateX(0)
+          // that.camera.rotateY(200)
+          // that.camera.rotateZ(0)
         },
       },
     )

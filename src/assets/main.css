@@ -1,3 +1,11 @@
 body {
   overflow-x: hidden;
 }
+#main-container {
+  position: relative;
+  opacity: 0;
+  transition: opacity 2s ease;
+}
+#main-container.show {
+  opacity: 1;
+}

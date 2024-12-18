@@ -1,11 +1,13 @@
 <script setup lang="ts">
+  import HeroSection from '@/components/HeroSection.vue';
   import ThreeScene from '@/components/Scene/ThreeScene.vue'
   import ScreenLoader from '@/components/ScreenLoader.vue'
 </script>
 
 <template>
-  <main>
-    <ScreenLoader/>
-    <ThreeScene/>
+  <ScreenLoader/>
+  <ThreeScene/>
+  <main id="main-container">
+    <HeroSection/>
   </main>
 </template>

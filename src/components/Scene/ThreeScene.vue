@@ -23,4 +23,18 @@
   justify-content: center;
   align-items: center;
 }
+#container {
+  pointer-events: none;
+  position: absolute;
+  top: 0;
+  left: 0;
+  outline: none;
+  z-index: 0;
+  height: 100vh;
+  width: 100vw;
+  margin: 0;
+  padding: 0;
+  background: #000;
+  background: radial-gradient(circle at center center, #171717 0, #050505 58%);
+}
 </style>
