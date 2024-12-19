@@ -43,13 +43,13 @@ class Canvas {
       frontView: {
         position: {
           x: -3,
-          y: 0.3,
+          y: 0.1,
           z: 1.15,
         },
         rotation: {
-          x: -0.1,
-          y: -1.2,
-          z: -0.1,
+          x: -0.82,
+          y: -1.26,
+          z: -0.82,
         },
       },
     }
@@ -98,7 +98,7 @@ class Canvas {
     this.resize()
     this.render()
     this.setupResize()
-    this.settings()
+    // this.settings()
   }
 
   clearScene() {
@@ -274,7 +274,7 @@ class Canvas {
   }
   startAudio() {
     if (!this.sound.isPlaying) {
-      // this.sound.play()
+      this.sound.play()
       let that = this
       const yPosition = { y: 10 }
       const transitionDelay = 2000
@@ -291,34 +291,44 @@ class Canvas {
         .onComplete(function () {
           loadingCover.parentNode.removeChild(loadingCover)
           that.goToCameraView('frontView', 'exterior')
-          that.rotateAroundView(that.porsche.position.clone(), 460)
+          that.rotateAroundView()
           mainContainer.classList.add('show')
         })
       this.tweenGroup.add(this.tweenCover)
     }
   }
 
-  rotateAroundView(target, endAngle) {
+  rotateAroundView() {
     let that = this
+    const target = that.porsche.position.clone()
+
+    // Calculate initial parameters
     const deltaX = that.camera.position.x - target.x
     const deltaZ = that.camera.position.z - target.z
-    let startAngle = THREE.MathUtils.radToDeg(Math.atan2(deltaZ, deltaX))
     const currentRadius = Math.sqrt(deltaX * deltaX + deltaZ * deltaZ)
+
+    // Calculate the starting angle from the camera's current position
+    const startAngle = Math.atan2(deltaZ, deltaX) // Angle in radians
+
     gsap.to(
-      { angle: startAngle },
+      { angle: startAngle }, // Start from the current angle
       {
-        angle: endAngle,
-        duration: 3,
+        angle: startAngle + Math.PI * 1.65, // Complete one full rotation
+        duration: 5, // Duration of the rotation
         ease: 'power2.inOut',
         onUpdate: function () {
-          const angleInRadians = THREE.MathUtils.degToRad(this.targets()[0].angle)
-          that.camera.position.x = target.x + currentRadius * Math.cos(angleInRadians)
-          // that.camera.position.y = 0.8
-          that.camera.position.z = target.z + currentRadius * Math.sin(angleInRadians) * 0.82
+          const angle = this.targets()[0].angle // Extract the current angle
+          const x = target.x + currentRadius * Math.cos(angle)
+          const z = target.z + currentRadius * Math.sin(angle) * 0.9
+
+          // Update camera position
+          that.camera.position.set(x, that.camera.position.y, z)
+
+          // Use lookAt to face the target
           that.camera.lookAt(target)
-          // that.camera.rotateX(0)
-          // that.camera.rotateY(200)
-          // that.camera.rotateZ(0)
+        },
+        onComplete: function () {
+          console.log(that.camera.quaternion)
         },
       },
     )
@@ -413,7 +423,7 @@ class Canvas {
     cameraFolder
       .add(
         {
-          rotateAroundView: () => this.rotateAroundView(this.porsche.position.clone(), 460),
+          rotateAroundView: () => this.rotateAroundView(),
         },
         'rotateAroundView',
       )
@@ -586,7 +596,7 @@ class Canvas {
     this.elapsedTime = this.time.getElapsedTime()
     // const deltaTime = this.elapsedTime - this.previousTime
     // this.previousTime = this.elapsedTime
-    // this.controls.update()
+    this.controls.update()
     this.updateSettings()
 
     if (this.tweenGroup) {
