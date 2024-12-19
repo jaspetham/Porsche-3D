@@ -19,7 +19,7 @@
     left:0;
     opacity: 0;
     transform: translateY(-50%);
-    transition: transform 3s ease-in, opacity .5s ease-in;
+    transition: transform 2.5s ease-in, opacity .5s ease-in;
   }
   .first{
     height: 100dvh;

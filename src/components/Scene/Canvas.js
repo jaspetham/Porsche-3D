@@ -314,8 +314,8 @@ class Canvas {
       { angle: startAngle }, // Start from the current angle
       {
         angle: startAngle + Math.PI * 1.65, // Complete one full rotation
-        duration: 5, // Duration of the rotation
-        ease: 'power2.inOut',
+        duration: 3, // Duration of the rotation
+        ease: 'power2',
         onUpdate: function () {
           const angle = this.targets()[0].angle // Extract the current angle
           const x = target.x + currentRadius * Math.cos(angle)
