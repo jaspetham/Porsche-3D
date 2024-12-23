@@ -25,7 +25,10 @@
     height: 100dvh;
     width: 100%;
     z-index: 1;
-    background: rgba(0,0,0,.3)
+    background: rgba(0,0,0,.3);
+    .section-wrapper{
+      padding-top: calc(var(--header-h) + 20px);
+    }
   }
   .first-title{
     width:clamp(300px, 70dvw, max(1200px, 80%));

@@ -280,6 +280,7 @@ class Canvas {
       const transitionDelay = 2000
       const loadingCover = document.getElementById('loading-text-intro')
       const mainContainer = document.getElementById('main-container')
+      const headerContainer = document.getElementById('header')
       this.tweenCover = new Tween(yPosition)
         .to({ y: 100 }, 900)
         .delay(transitionDelay)
@@ -292,6 +293,7 @@ class Canvas {
           loadingCover.parentNode.removeChild(loadingCover)
           that.goToCameraView('frontView', 'exterior')
           that.rotateAroundView()
+          headerContainer.classList.add('show')
           mainContainer.classList.add('show')
         })
       this.tweenGroup.add(this.tweenCover)
@@ -315,8 +317,7 @@ class Canvas {
       {
         angle: startAngle + Math.PI * 1.65, // Complete one full rotation
         duration: 4, // Duration of the rotation
-        ease: 'power2',
-        delay: 0.5,
+        ease: 'power1.out',
         onUpdate: function () {
           const angle = this.targets()[0].angle // Extract the current angle
           const x = target.x + currentRadius * Math.cos(angle)
@@ -327,9 +328,6 @@ class Canvas {
 
           // Use lookAt to face the target
           that.camera.lookAt(target)
-        },
-        onComplete: function () {
-          console.log(that.camera.quaternion)
         },
       },
     )
