@@ -33,7 +33,7 @@ class Canvas {
     // camera view
     this.cameraView = {
       driverView: {
-        position: { x: 0.3, y: 0.32, z: 0.88 },
+        position: { x: 0.2, y: 0.3, z: 1.2 },
         rotation: { x: -1.55, y: 1.17, z: 1.55 },
       },
       sideView: {
@@ -42,8 +42,8 @@ class Canvas {
       },
       frontView: {
         position: {
-          x: -3,
-          y: 0.1,
+          x: -3.2,
+          y: 0.45,
           z: 1.15,
         },
         rotation: {
@@ -64,7 +64,7 @@ class Canvas {
       exterior: {
         metalness: 0.5,
         roughness: 0.3,
-        envMapIntensity: 1,
+        envMapIntensity: 0.8,
       },
     }
 
@@ -204,7 +204,6 @@ class Canvas {
           y: this.cameraView.driverView.rotation.y,
           z: this.cameraView.driverView.rotation.z,
         }
-
         break
       }
       case 'sideView': {
@@ -322,11 +321,7 @@ class Canvas {
           const angle = this.targets()[0].angle // Extract the current angle
           const x = target.x + currentRadius * Math.cos(angle)
           const z = target.z + currentRadius * Math.sin(angle) * 0.9
-
-          // Update camera position
           that.camera.position.set(x, that.camera.position.y, z)
-
-          // Use lookAt to face the target
           that.camera.lookAt(target)
         },
       },

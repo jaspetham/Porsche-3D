@@ -1,14 +1,14 @@
 <script lang="ts" setup>
-  import Canvas from "./Canvas";
-  import { onMounted } from 'vue';
-  import { useCanvasStore } from "@/stores/CanvasInstance";
-  const canvasStore = useCanvasStore();
-  onMounted(() => {
-    const canvasInstance = new Canvas({
-      dom: document.getElementById("container"),
-    });
-    canvasStore.setCanvasInstance(canvasInstance);
-  });
+import Canvas from './Canvas'
+import { onMounted } from 'vue'
+import { useCanvasStore } from '@/stores/CanvasInstance'
+const canvasStore = useCanvasStore()
+onMounted(() => {
+  const canvasInstance = new Canvas({
+    dom: document.getElementById('container'),
+  })
+  canvasStore.setCanvasInstance(canvasInstance)
+})
 </script>
 
 <template>

@@ -15,7 +15,7 @@
   --info-color: #2ec6ff;
   --warning-color: #f9ce95;
   --border-default: #cbd4e1;
-  --dark-color: #000000;
+  --font-color: #ffffff;
   --light-color: #fafcff;
   --white-color: #ffffff;
   --border-color: #cbd4e1;
@@ -47,7 +47,7 @@
 
 @media (max-width: 1920px) {
   :root {
-    --w-limit: 1280px;
+    --w-limit: 1440px;
   }
 }
 
@@ -181,7 +181,7 @@ html {
 }
 
 body {
-  color: var(--white-color);
+  color: var(--font-color);
   font-size: var(--fs-200);
   font-family: var(--ff-primary) !important;
   overflow-x: hidden;
@@ -351,4 +351,10 @@ h6 {
 }
 #main-container.show {
   opacity: 1;
+}
+
+.movement {
+  transition:
+    transform 2s ease-out,
+    opacity 2s ease-out;
 }
