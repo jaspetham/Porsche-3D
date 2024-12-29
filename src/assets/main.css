@@ -181,6 +181,7 @@ html {
 }
 
 body {
+  overflow: hidden;
   color: var(--font-color);
   font-size: var(--fs-200);
   font-family: var(--ff-primary) !important;
