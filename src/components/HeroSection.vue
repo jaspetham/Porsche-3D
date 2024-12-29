@@ -1,10 +1,11 @@
 <script setup lang="ts">
 import porscheLogo from '@/assets/porsche_logo.svg'
 import porscheVector from '@/assets/porsche-vector-1.png'
+import SectionWrapper from './common/SectionWrapper.vue'
 </script>
 <template>
   <section id="hero" class="first relative">
-    <div class="section-wrapper flex flex-col items-center gap-6 mx-auto w-limit">
+    <SectionWrapper>
       <div class="first-title movement">
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 4500 300">
           <path
@@ -23,30 +24,28 @@ import porscheVector from '@/assets/porsche-vector-1.png'
           <img :src="porscheVector" class="porsche-vector movement" alt="porsche vector" />
         </div>
       </div>
-    </div>
+    </SectionWrapper>
   </section>
 </template>
 <style lang="scss" scoped>
-.section-wrapper {
-  position: absolute;
-  padding: 2rem 0;
-  width: 100%;
-  height: 100%;
-  top: 0;
-  left: 50%;
-  opacity: 0;
-  transform: translateX(-50%);
-  transition:
-    transform 2.5s ease-in,
-    opacity 0.5s ease-in;
-}
 .first {
   height: 100dvh;
   width: 100%;
   z-index: 1;
   background: rgba(0, 0, 0, 0.2);
   .section-wrapper {
+    padding: 2rem 0;
     padding-top: calc(var(--header-h) + 20px);
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: 50%;
+    opacity: 0;
+    transform: translateX(-50%);
+    transition:
+      transform 2.5s ease-in,
+      opacity 0.5s ease-in;
   }
 }
 .first-title {

@@ -3,8 +3,8 @@
   --ff-primary: 'Poppins', sans-serif;
   --brand-color: #3baba0;
   --brand-dim: #ecf8f7;
-  --primary-color: #000000;
-  --secondary-color: #2c2c2c;
+  --primary-color: #2c2c2c;
+  --secondary-color: #aaaec6;
   --accent-color-1: #e10600;
   --line-height-1: 1.2em;
   --success-dim: #e3fcec;
@@ -16,7 +16,7 @@
   --warning-color: #f9ce95;
   --border-default: #cbd4e1;
   --font-color: #ffffff;
-  --light-color: #fafcff;
+  --light-color: #ececec;
   --white-color: #ffffff;
   --border-color: #cbd4e1;
   --header-h: 60px;
@@ -348,6 +348,7 @@ h6 {
   position: relative;
   opacity: 0;
   transition: opacity 0.4s ease;
+  overflow: hidden;
 }
 #main-container.show {
   opacity: 1;
@@ -357,4 +358,9 @@ h6 {
   transition:
     transform 2s ease-out,
     opacity 2s ease-out;
+}
+
+.subtitle {
+  font-size: var(--fs-100);
+  font-weight: 500;
 }

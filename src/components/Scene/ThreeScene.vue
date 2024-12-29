@@ -30,6 +30,7 @@ onMounted(() => {
   left: 0;
   outline: none;
   z-index: 0;
+  // z-index: 99;
   height: 100vh;
   width: 100vw;
   margin: 0;

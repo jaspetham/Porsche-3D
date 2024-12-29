@@ -20,39 +20,20 @@ class Canvas {
     this.renderer.toneMappingExposure = 0.25
     this.renderer.shadowMap.enabled = true
     this.renderer.shadowMap.type = THREE.PCFSoftShadowMap
-
     this.container.appendChild(this.renderer.domElement)
 
-    this.camera = new THREE.PerspectiveCamera(
-      70,
-      window.innerWidth / window.innerHeight,
-      0.001,
-      1000,
+    this.aboutDetailsContainer = document.getElementById('about-scene')
+    this.renderer2 = new THREE.WebGLRenderer({ antialias: false })
+    this.renderer2.toneMapping = THREE.NeutralToneMapping
+    this.renderer2.toneMappingExposure = 0.25
+    this.renderer2.setPixelRatio(Math.min(window.devicePixelRatio, 1))
+    this.renderer2.setSize(
+      this.aboutDetailsContainer.offsetWidth,
+      this.aboutDetailsContainer.offsetHeight,
     )
+    this.aboutDetailsContainer.appendChild(this.renderer2.domElement)
 
-    // camera view
-    this.cameraView = {
-      driverView: {
-        position: { x: 0.2, y: 0.3, z: 1.2 },
-        rotation: { x: -1.55, y: 1.17, z: 1.55 },
-      },
-      sideView: {
-        position: { x: 0.05, y: 0.15, z: 3 },
-        rotation: { x: -0.04, y: -0.04, z: 0 },
-      },
-      frontView: {
-        position: {
-          x: -3.2,
-          y: 0.45,
-          z: 1.15,
-        },
-        rotation: {
-          x: -0.82,
-          y: -1.26,
-          z: -0.82,
-        },
-      },
-    }
+    this.cameraController()
 
     // build type
     this.materialType = {
@@ -82,9 +63,6 @@ class Canvas {
       },
     }
     this.porsche = null
-    this.controls = new OrbitControls(this.camera, this.renderer.domElement)
-    this.controls.enableDamping = true
-    this.controls.maxPolarAngle = Math.PI / 2
     this.time = new THREE.Clock()
     this.elapsedTime = 0
     this.previousTime = 0
@@ -101,6 +79,85 @@ class Canvas {
     // this.settings()
   }
 
+  cameraController() {
+    // camera view
+    this.cameraView = {
+      driverView: {
+        position: { x: 0.2, y: 0.3, z: 1.2 },
+        rotation: { x: -1.55, y: 1.17, z: 1.55 },
+      },
+      sideView: {
+        position: { x: 0.05, y: 0.15, z: 3 },
+        rotation: { x: -0.04, y: -0.04, z: 0 },
+      },
+      frontView: {
+        position: {
+          x: -3.2,
+          y: 0.45,
+          z: 1.15,
+        },
+        rotation: {
+          x: -0.82,
+          y: -1.26,
+          z: -0.82,
+        },
+      },
+      backView: {
+        position: {
+          x: 3.3,
+          y: 0.3,
+          z: 0.65,
+        },
+        rotation: {
+          x: -0.82,
+          y: -1.26,
+          z: -0.82,
+        },
+      },
+      topView: {
+        position: {
+          x: 0.75,
+          y: 4.25,
+          z: 0.02,
+        },
+        rotation: {
+          x: -0.82,
+          y: -1.26,
+          z: -0.82,
+        },
+      },
+    }
+
+    this.cameraGroup1 = new THREE.Group()
+    this.camera = new THREE.PerspectiveCamera(
+      70,
+      window.innerWidth / window.innerHeight,
+      0.001,
+      1000,
+    )
+    this.scene.add(this.cameraGroup1)
+
+    this.controls = new OrbitControls(this.camera, this.renderer.domElement)
+    this.controls.enableDamping = true
+    this.controls.maxPolarAngle = Math.PI / 2
+
+    this.cameraGroup2 = new THREE.Group()
+    this.camera2 = new THREE.PerspectiveCamera(
+      35,
+      this.aboutDetailsContainer.clientWidth / this.aboutDetailsContainer.clientHeight,
+      0.001,
+      1000,
+    )
+
+    this.camera2.position.set(-3.2, 0, -1.5)
+    this.camera2.rotation.set(0, -2.25, 0)
+
+    this.scene.add(this.cameraGroup2)
+
+    // this.controls2 = new OrbitControls(this.camera2, this.renderer2.domElement)
+    // this.controls2.enableDamping = true
+    // this.controls2.maxPolarAngle = Math.PI / 2
+  }
   clearScene() {
     this.renderer.renderLists.dispose()
   }
@@ -232,6 +289,32 @@ class Canvas {
         }
         break
       }
+      case 'backView': {
+        targetPosition = {
+          x: this.cameraView.backView.position.x,
+          y: this.cameraView.backView.position.y,
+          z: this.cameraView.backView.position.z,
+        }
+        targetRotation = {
+          x: this.cameraView.backView.rotation.x,
+          y: this.cameraView.backView.rotation.y,
+          z: this.cameraView.backView.rotation.z,
+        }
+        break
+      }
+      case 'topView': {
+        targetPosition = {
+          x: this.cameraView.topView.position.x,
+          y: this.cameraView.topView.position.y,
+          z: this.cameraView.topView.position.z,
+        }
+        targetRotation = {
+          x: this.cameraView.topView.rotation.x,
+          y: this.cameraView.topView.rotation.y,
+          z: this.cameraView.topView.rotation.z,
+        }
+        break
+      }
     }
     const animation = gsap.to(this.camera.position, {
       duration: transSec,
@@ -353,6 +436,11 @@ class Canvas {
         this.updateSettings()
       })
     }
+    // if (this.controls2) {
+    //   this.controls2.addEventListener('change', () => {
+    //     this.updateSettings()
+    //   })
+    // }
 
     this.gui = new dat.GUI()
 
@@ -362,45 +450,45 @@ class Canvas {
       .add(this.settings, 'cameraX', -10, 10, 0.01)
       .listen()
       .onChange((value) => {
-        this.camera.position.x = parseFloat(value.toFixed(2))
-        this.settings.cameraX = this.camera.position.x.toFixed(2)
+        this.camera2.position.x = parseFloat(value.toFixed(2))
+        this.settings.cameraX = this.camera2.position.x.toFixed(2)
       })
 
     cameraFolder
       .add(this.settings, 'cameraY', -10, 10, 0.01)
       .listen()
       .onChange((value) => {
-        this.camera.position.y = parseFloat(value.toFixed(2))
-        this.settings.cameraY = this.camera.position.y.toFixed(2)
+        this.camera2.position.y = parseFloat(value.toFixed(2))
+        this.settings.cameraY = this.camera2.position.y.toFixed(2)
       })
 
     cameraFolder
       .add(this.settings, 'cameraZ', -10, 10, 0.01)
       .listen()
       .onChange((value) => {
-        this.camera.position.z = parseFloat(value.toFixed(2))
-        this.settings.cameraZ = this.camera.position.z.toFixed(2)
+        this.camera2.position.z = parseFloat(value.toFixed(2))
+        this.settings.cameraZ = this.camera2.position.z.toFixed(2)
       })
     cameraFolder
       .add(this.settings, 'cameraRotX', -10, 10, 0.01)
       .listen()
       .onChange((value) => {
-        this.camera.rotation.x = parseFloat(value.toFixed(2))
-        this.settings.cameraRotX = this.camera.rotation.x.toFixed(2)
+        this.camera2.rotation.x = parseFloat(value.toFixed(2))
+        this.settings.cameraRotX = this.camera2.rotation.x.toFixed(2)
       })
     cameraFolder
       .add(this.settings, 'cameraRotY', -10, 10, 0.01)
       .listen()
       .onChange((value) => {
-        this.camera.rotation.y = parseFloat(value.toFixed(2))
-        this.settings.cameraRotY = this.camera.rotation.y.toFixed(2)
+        this.camera2.rotation.y = parseFloat(value.toFixed(2))
+        this.settings.cameraRotY = this.camera2.rotation.y.toFixed(2)
       })
     cameraFolder
       .add(this.settings, 'cameraRotZ', -10, 10, 0.01)
       .listen()
       .onChange((value) => {
-        this.camera.rotation.z = parseFloat(value.toFixed(2))
-        this.settings.cameraRotZ = this.camera.rotation.z.toFixed(2)
+        this.camera2.rotation.z = parseFloat(value.toFixed(2))
+        this.settings.cameraRotZ = this.camera2.rotation.z.toFixed(2)
       })
     cameraFolder
       .add(
@@ -422,6 +510,12 @@ class Canvas {
         'rotateAroundView',
       )
       .name('Rotate Around View')
+    cameraFolder
+      .add({ goToBackView: () => this.goToCameraView('backView', 'exterior') }, 'goToBackView')
+      .name('Go To Back View')
+    cameraFolder
+      .add({ goToTopView: () => this.goToCameraView('topView', 'exterior') }, 'goToTopView')
+      .name('Go To Top View')
     // cameraFolder.close()
     // light 2 pos
     const light2Folder = this.gui.addFolder('Light')
@@ -550,9 +644,10 @@ class Canvas {
 
   addObjects() {
     this.material = new THREE.MeshStandardMaterial({
-      roughness: 0,
+      roughness: 1,
       metalness: 0.2,
-      envMapIntensity: 0.2,
+      envMapIntensity: 0,
+      color: 0xececec,
     })
 
     this.geometry = new THREE.PlaneGeometry(500, 500, 1)
@@ -572,6 +667,12 @@ class Canvas {
     this.settings.cameraRotX = this.camera.rotation.x.toFixed(2)
     this.settings.cameraRotY = this.camera.rotation.y.toFixed(2)
     this.settings.cameraRotZ = this.camera.rotation.z.toFixed(2)
+    this.settings.cameraX = this.camera2.position.x.toFixed(2)
+    this.settings.cameraY = this.camera2.position.y.toFixed(2)
+    this.settings.cameraZ = this.camera2.position.z.toFixed(2)
+    this.settings.cameraRotX = this.camera2.rotation.x.toFixed(2)
+    this.settings.cameraRotY = this.camera2.rotation.y.toFixed(2)
+    this.settings.cameraRotZ = this.camera2.rotation.z.toFixed(2)
   }
 
   stop() {
@@ -591,6 +692,9 @@ class Canvas {
     // const deltaTime = this.elapsedTime - this.previousTime
     // this.previousTime = this.elapsedTime
     this.controls.update()
+    // if (this.controls2) {
+    //   this.controls2.update()
+    // }
     this.updateSettings()
 
     if (this.tweenGroup) {
@@ -598,6 +702,7 @@ class Canvas {
     }
     requestAnimationFrame(this.render.bind(this))
     this.renderer.render(this.scene, this.camera)
+    this.renderer2.render(this.scene, this.camera2)
   }
 }
 
