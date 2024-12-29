@@ -377,6 +377,7 @@ class Canvas {
           that.rotateAroundView()
           headerContainer.classList.add('show')
           mainContainer.classList.add('show')
+          document.body.style.overflowY = 'auto'
         })
       this.tweenGroup.add(this.tweenCover)
     }
