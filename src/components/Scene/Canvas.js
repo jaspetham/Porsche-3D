@@ -68,15 +68,31 @@ class Canvas {
     this.previousTime = 0
     this.tweenGroup = new Group()
     this.isPlaying = true
-    this.addObjects()
+    this.initialCameraZ = 0
     this.loadModels()
     this.loadEnvironmentMap()
     this.loadAudios()
+    this.addObjects()
     this.addLights()
     this.resize()
     this.render()
     this.setupResize()
     // this.settings()
+  }
+
+  onScrollEvents(scrollAmount) {
+    if (this.initialCameraZ > 0) {
+      const movementRange = 7
+      const maxScroll = 1200
+      const normalizedScroll = Math.min(1, Math.max(0, scrollAmount / maxScroll))
+      let newCameraZ = this.initialCameraZ - normalizedScroll * movementRange
+      const targetCameraZ = Math.min(this.initialCameraZ, newCameraZ)
+      gsap.to(this.camera.position, {
+        z: targetCameraZ,
+        duration: 0.2,
+        ease: 'power1.out',
+      })
+    }
   }
 
   cameraController() {
@@ -153,10 +169,6 @@ class Canvas {
     this.camera2.rotation.set(0, -2.25, 0)
 
     this.scene.add(this.cameraGroup2)
-
-    // this.controls2 = new OrbitControls(this.camera2, this.renderer2.domElement)
-    // this.controls2.enableDamping = true
-    // this.controls2.maxPolarAngle = Math.PI / 2
   }
   clearScene() {
     this.renderer.renderLists.dispose()
@@ -377,7 +389,9 @@ class Canvas {
           that.rotateAroundView()
           headerContainer.classList.add('show')
           mainContainer.classList.add('show')
-          document.body.style.overflowY = 'auto'
+          setTimeout(() => {
+            document.body.style.overflowY = 'auto'
+          }, 5000)
         })
       this.tweenGroup.add(this.tweenCover)
     }
@@ -407,6 +421,7 @@ class Canvas {
           const z = target.z + currentRadius * Math.sin(angle) * 0.9
           that.camera.position.set(x, that.camera.position.y, z)
           that.camera.lookAt(target)
+          that.initialCameraZ = z
         },
       },
     )
@@ -451,24 +466,24 @@ class Canvas {
       .add(this.settings, 'cameraX', -10, 10, 0.01)
       .listen()
       .onChange((value) => {
-        this.camera2.position.x = parseFloat(value.toFixed(2))
-        this.settings.cameraX = this.camera2.position.x.toFixed(2)
+        this.camera.position.x = parseFloat(value.toFixed(2))
+        this.settings.cameraX = this.camera.position.x.toFixed(2)
       })
 
     cameraFolder
       .add(this.settings, 'cameraY', -10, 10, 0.01)
       .listen()
       .onChange((value) => {
-        this.camera2.position.y = parseFloat(value.toFixed(2))
-        this.settings.cameraY = this.camera2.position.y.toFixed(2)
+        this.camera.position.y = parseFloat(value.toFixed(2))
+        this.settings.cameraY = this.camera.position.y.toFixed(2)
       })
 
     cameraFolder
       .add(this.settings, 'cameraZ', -10, 10, 0.01)
       .listen()
       .onChange((value) => {
-        this.camera2.position.z = parseFloat(value.toFixed(2))
-        this.settings.cameraZ = this.camera2.position.z.toFixed(2)
+        this.camera.position.z = parseFloat(value.toFixed(2))
+        this.settings.cameraZ = this.camera.position.z.toFixed(2)
       })
     cameraFolder
       .add(this.settings, 'cameraRotX', -10, 10, 0.01)
@@ -668,12 +683,12 @@ class Canvas {
     this.settings.cameraRotX = this.camera.rotation.x.toFixed(2)
     this.settings.cameraRotY = this.camera.rotation.y.toFixed(2)
     this.settings.cameraRotZ = this.camera.rotation.z.toFixed(2)
-    this.settings.cameraX = this.camera2.position.x.toFixed(2)
-    this.settings.cameraY = this.camera2.position.y.toFixed(2)
-    this.settings.cameraZ = this.camera2.position.z.toFixed(2)
-    this.settings.cameraRotX = this.camera2.rotation.x.toFixed(2)
-    this.settings.cameraRotY = this.camera2.rotation.y.toFixed(2)
-    this.settings.cameraRotZ = this.camera2.rotation.z.toFixed(2)
+    // this.settings.cameraX = this.camera2.position.x.toFixed(2)
+    // this.settings.cameraY = this.camera2.position.y.toFixed(2)
+    // this.settings.cameraZ = this.camera2.position.z.toFixed(2)
+    // this.settings.cameraRotX = this.camera2.rotation.x.toFixed(2)
+    // this.settings.cameraRotY = this.camera2.rotation.y.toFixed(2)
+    // this.settings.cameraRotZ = this.camera2.rotation.z.toFixed(2)
   }
 
   stop() {
@@ -696,7 +711,7 @@ class Canvas {
     // if (this.controls2) {
     //   this.controls2.update()
     // }
-    this.updateSettings()
+    // this.updateSettings()
 
     if (this.tweenGroup) {
       this.tweenGroup.update()

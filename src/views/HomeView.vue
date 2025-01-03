@@ -8,11 +8,13 @@ import ScreenLoader from '@/components/ScreenLoader.vue'
 
 <template>
   <ScreenLoader />
-  <ThreeScene />
+  <HeaderSection />
   <!-- <main id="main-container" class="show"> -->
   <main id="main-container">
-    <HeaderSection />
+    <ThreeScene />
     <HeroSection />
-    <AboutSection />
+    <section class="content-wrapper">
+      <AboutSection />
+    </section>
   </main>
 </template>

@@ -1,18 +1,29 @@
 <script lang="ts" setup>
 import Canvas from './Canvas'
-import { onMounted } from 'vue'
+import { onMounted, watch } from 'vue'
 import { useCanvasStore } from '@/stores/CanvasInstance'
+import { useScrollEvent } from '@/composables/useScrollEvent'
+
 const canvasStore = useCanvasStore()
+const { scrollAmount } = useScrollEvent()
+
 onMounted(() => {
   const canvasInstance = new Canvas({
     dom: document.getElementById('container'),
   })
   canvasStore.setCanvasInstance(canvasInstance)
+  watch(scrollAmount, (newScrollValue) => {
+    if (canvasStore.canvasInstance) {
+      canvasStore.canvasInstance.onScrollEvents(newScrollValue)
+    }
+  })
 })
 </script>
 
 <template>
-  <div ref="canvasContainer" id="container" class="canvas-container bg-gray-800 p-4"></div>
+  <div ref="canvasContainer" id="container" class="canvas-container bg-gray-800 p-4">
+    <div class="overlay"></div>
+  </div>
 </template>
 
 <style lang="scss" scoped>
@@ -22,20 +33,19 @@ onMounted(() => {
   display: flex;
   justify-content: center;
   align-items: center;
-}
-#container {
+  z-index: 0;
   pointer-events: none;
-  position: absolute;
+  position: fixed;
   top: 0;
   left: 0;
   outline: none;
-  z-index: 0;
-  // z-index: 99;
-  height: 100vh;
-  width: 100vw;
-  margin: 0;
-  padding: 0;
-  background: #000;
-  background: radial-gradient(circle at center center, #171717 0, #050505 58%);
+  .overlay {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(0deg, rgba(0, 0, 0, 0.6) 5%, rgba(255, 255, 255, 0) 100%);
+  }
 }
 </style>

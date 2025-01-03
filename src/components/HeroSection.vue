@@ -13,7 +13,7 @@ import SectionWrapper from './common/SectionWrapper.vue'
           ></path>
         </svg>
       </div>
-      <div class="hero-detail flex items-center justify-between w-full mt-6">
+      <div class="hero-detail flex items-center justify-between w-full mt-6 ff-secondary">
         <div class="porsche-hero movement flex items-center gap-3">
           <img class="porsche-logo" :src="porscheLogo" alt="porsche logo" />
           <p class="max-w-[20ch] font-medium fs-250">
@@ -31,12 +31,10 @@ import SectionWrapper from './common/SectionWrapper.vue'
 .first {
   height: 100dvh;
   width: 100%;
-  z-index: 1;
-  background: rgba(0, 0, 0, 0.2);
   .section-wrapper {
     padding: 2rem 0;
     padding-top: calc(var(--header-h) + 20px);
-    position: absolute;
+    position: fixed;
     width: 100%;
     height: 100%;
     top: 0;
