@@ -10,8 +10,8 @@ import ScreenLoader from '@/components/ScreenLoader.vue'
   <ScreenLoader />
   <HeaderSection />
   <!-- <main id="main-container" class="show"> -->
+  <ThreeScene />
   <main id="main-container">
-    <ThreeScene />
     <HeroSection />
     <section class="content-wrapper">
       <AboutSection />
