@@ -1,9 +1,7 @@
 import * as THREE from 'three'
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js'
-import { Tween, Easing, Group } from 'three/examples/jsm/libs/tween.module.js'
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader'
 import { DRACOLoader } from 'three/examples/jsm/loaders/DRACOLoader.js'
-import { EXRLoader } from 'three/examples/jsm/Addons.js'
 import * as dat from 'lil-gui'
 import gsap from 'gsap'
 class Canvas {
@@ -15,7 +13,7 @@ class Canvas {
     this.renderer = new THREE.WebGLRenderer()
     this.renderer.setPixelRatio(window.devicePixelRatio)
     this.renderer.setSize(this.width, this.height)
-    this.renderer.setClearColor(0x000000, 1)
+    this.renderer.setClearColor(0xffffff, 1)
     this.renderer.toneMapping = THREE.NeutralToneMapping
     this.renderer.toneMappingExposure = 0.25
     this.renderer.shadowMap.enabled = true
@@ -32,7 +30,7 @@ class Canvas {
         envMapIntensity: 2,
       },
       exterior: {
-        metalness: 0.5,
+        metalness: 0.2,
         roughness: 0.3,
         envMapIntensity: 0.8,
       },
@@ -55,12 +53,9 @@ class Canvas {
     this.time = new THREE.Clock()
     this.elapsedTime = 0
     this.previousTime = 0
-    this.tweenGroup = new Group()
     this.isPlaying = true
     this.initialCameraZ = 0
     this.loadModels()
-    this.loadEnvironmentMap()
-    this.loadAudios()
     this.addObjects()
     this.addLights()
     this.resize()
@@ -147,57 +142,9 @@ class Canvas {
   }
   clearScene() {
     this.renderer.renderLists.dispose()
+    this.renderer2.renderLists.dispose()
   }
 
-  introAnimation() {
-    this.introTween = new Tween(this.camera.position.set(0, 4, 2.7))
-      .to({ x: 0, y: 2.4, z: 8.8 }, 3500)
-      .easing(Easing.Quadratic.InOut)
-      .start()
-      .onComplete(function () {
-        Tween.remove(this)
-      })
-  }
-  loadEnvironmentMap() {
-    this.loadingManager = new THREE.LoadingManager()
-    const startButton = document.getElementById('start-button')
-    const loadingValue = document.getElementById('loading-value')
-    this.loadingManager.onLoad = () => {
-      const progress = { value: 0 }
-      this.tween = new Tween(progress)
-        .to({ value: 100 }, 900)
-        .easing(Easing.Quadratic.InOut)
-        .start()
-        .onUpdate(() => {
-          loadingValue.innerHTML = `${progress.value.toFixed()}%`
-        })
-        .onComplete(() => {
-          startButton.style.display = 'block'
-          loadingValue.parentNode.removeChild(loadingValue)
-          this.goToCameraView('frontView', 'exterior')
-        })
-      this.tweenGroup.add(this.tween)
-      window.scroll(0, 0)
-    }
-
-    this.environmentLoader = new EXRLoader(this.loadingManager).load(
-      'models/studio.exr',
-      (environmentMap) => {
-        environmentMap.mapping = THREE.EquirectangularReflectionMapping
-        this.scene.background = environmentMap
-        this.scene.environment = environmentMap
-      },
-    )
-  }
-  loadAudios() {
-    this.listener = new THREE.AudioListener()
-    this.camera.add(this.listener)
-    this.sound = new THREE.Audio(this.listener)
-    this.audioLoader = new THREE.AudioLoader()
-    this.audioLoader.load('audio/porsche_updated.mp3', (buffer) => {
-      this.sound.setBuffer(buffer)
-    })
-  }
   loadModels() {
     this.dracoLoader = new DRACOLoader()
     this.dracoLoader.setDecoderPath('/draco/')
@@ -211,13 +158,9 @@ class Canvas {
         child.castShadow = true
         child.receiveShadow = true
         if (child.material) {
-          if (!child.material.envMap) {
-            child.material.envMap = this.scene.environment
-            child.material.metalness = this.materialType.exterior.metalness
-            child.material.roughness = this.materialType.exterior.roughness
-            child.material.envMapIntensity = this.materialType.exterior.envMapIntensity
-            child.material.needsUpdate = true
-          }
+          child.material.metalness = this.materialType.exterior.metalness
+          child.material.roughness = this.materialType.exterior.roughness
+          child.material.needsUpdate = true
         }
       })
       this.porsche.position.set(
@@ -226,6 +169,7 @@ class Canvas {
         this.porschDefaultValue.position.z,
       )
       this.porsche.rotation.y = 270 * (Math.PI / 180)
+      this.goToCameraView('frontView', 'exterior')
       this.scene.add(this.porsche)
     })
   }
@@ -340,37 +284,6 @@ class Canvas {
       },
     })
   }
-  startAudio() {
-    if (!this.sound.isPlaying) {
-      this.sound.play()
-      let that = this
-      const yPosition = { y: 10 }
-      const transitionDelay = 2000
-      const loadingCover = document.getElementById('loading-text-intro')
-      const mainContainer = document.getElementById('main-container')
-      const headerContainer = document.getElementById('header')
-      this.tweenCover = new Tween(yPosition)
-        .to({ y: 100 }, 900)
-        .delay(transitionDelay)
-        .easing(Easing.Quadratic.InOut)
-        .start()
-        .onUpdate(function () {
-          loadingCover.style.setProperty('transform', `translate( 0, ${yPosition.y}%)`)
-        })
-        .onComplete(function () {
-          loadingCover.parentNode.removeChild(loadingCover)
-          that.goToCameraView('frontView', 'exterior')
-          that.rotateAroundView()
-          headerContainer.classList.add('show')
-          mainContainer.classList.add('show')
-          setTimeout(() => {
-            document.body.style.overflowY = 'auto'
-          }, 5000)
-        })
-      this.tweenGroup.add(this.tweenCover)
-    }
-  }
-
   rotateAroundView() {
     let that = this
     const target = that.porsche.position.clone()
@@ -426,11 +339,6 @@ class Canvas {
         this.updateSettings()
       })
     }
-    // if (this.controls2) {
-    //   this.controls2.addEventListener('change', () => {
-    //     this.updateSettings()
-    //   })
-    // }
 
     this.gui = new dat.GUI()
 
@@ -633,14 +541,12 @@ class Canvas {
   }
 
   addObjects() {
-    this.material = new THREE.MeshStandardMaterial({
-      roughness: 1,
-      metalness: 0.2,
-      envMapIntensity: 0,
-      color: 0xececec,
+    this.material = new THREE.MeshPhongMaterial({
+      color: 0xffffff,
+      opacity: 0,
     })
 
-    this.geometry = new THREE.PlaneGeometry(500, 500, 1)
+    this.geometry = new THREE.PlaneGeometry(10, 10, 1)
     this.plane = new THREE.Mesh(this.geometry, this.material)
     this.plane.rotation.x = -Math.PI / 2
     this.plane.frustumCulled = true
@@ -681,15 +587,7 @@ class Canvas {
     this.elapsedTime = this.time.getElapsedTime()
     // const deltaTime = this.elapsedTime - this.previousTime
     // this.previousTime = this.elapsedTime
-    this.controls.update()
-    // if (this.controls2) {
-    //   this.controls2.update()
-    // }
-    // this.updateSettings()
-
-    if (this.tweenGroup) {
-      this.tweenGroup.update()
-    }
+    // this.controls.update()
     requestAnimationFrame(this.render.bind(this))
     this.renderer.render(this.scene, this.camera)
   }

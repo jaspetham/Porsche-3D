@@ -13,8 +13,9 @@ onMounted(() => {
   })
   canvasStore.setCanvasInstance(canvasInstance)
   watch(scrollAmount, (newScrollValue) => {
-    if (canvasStore.canvasInstance) {
-      canvasStore.canvasInstance.onScrollEvents(newScrollValue)
+    const maxScroll = 1200
+    if (canvasStore.canvasInstance && newScrollValue < maxScroll) {
+      canvasStore.canvasInstance.onScrollEvents(newScrollValue, maxScroll)
     }
   })
 })

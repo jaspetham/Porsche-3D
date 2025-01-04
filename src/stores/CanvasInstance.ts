@@ -9,9 +9,16 @@ export const useCanvasStore = defineStore('canvas', () => {
   const setCanvasInstance = (instance: Canvas) => {
     canvasInstance.value = instance
   }
+  const secondaryCanvasInstance = shallowRef<Canvas | null>(null)
+
+  const setSecondaryCanvasInstance = (instance: Canvas) => {
+    secondaryCanvasInstance.value = instance
+  }
 
   return {
     canvasInstance,
     setCanvasInstance,
+    secondaryCanvasInstance,
+    setSecondaryCanvasInstance,
   }
 })
