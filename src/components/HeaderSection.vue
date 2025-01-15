@@ -12,7 +12,7 @@
 </template>
 <style lang="scss">
 .header-wrapper {
-  position: fixed;
+  position: absolute;
   top: 0;
   left: 0;
   z-index: 9999;
