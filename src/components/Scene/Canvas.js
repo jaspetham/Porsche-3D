@@ -12,11 +12,11 @@ class Canvas {
     this.container = options.dom
     this.width = this.container.offsetWidth
     this.height = this.container.offsetHeight
-    this.renderer = new THREE.WebGLRenderer()
+    this.renderer = new THREE.WebGLRenderer({ antialias: true })
     this.renderer.setPixelRatio(window.devicePixelRatio)
     this.renderer.setSize(this.width, this.height)
     this.renderer.setClearColor(0x000000, 1)
-    this.renderer.toneMapping = THREE.NeutralToneMapping
+    this.renderer.toneMapping = THREE.ACESFilmicToneMapping
     this.renderer.toneMappingExposure = 0.25
     this.renderer.shadowMap.enabled = true
     this.renderer.shadowMap.type = THREE.PCFSoftShadowMap
@@ -66,7 +66,7 @@ class Canvas {
     this.resize()
     this.render()
     this.setupResize()
-    this.settings()
+    // this.settings()
   }
 
   onScrollEvents(scrollAmount, maxScroll) {

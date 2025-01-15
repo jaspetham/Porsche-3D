@@ -30,7 +30,7 @@ import AboutScene from './Scene/AboutScene.vue'
   color: white;
 }
 #about-scene {
-  height: 80dvh;
+  height: 100dvh;
   canvas {
     border-top-left-radius: 5rem;
     border-top-right-radius: 5rem;

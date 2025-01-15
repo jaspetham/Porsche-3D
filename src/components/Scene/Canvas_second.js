@@ -10,12 +10,12 @@ class Canvas {
     this.container = options.dom
     this.width = this.container.offsetWidth
     this.height = this.container.offsetHeight
-    this.renderer = new THREE.WebGLRenderer()
+    this.renderer = new THREE.WebGLRenderer({ antialias: true })
     this.renderer.setPixelRatio(window.devicePixelRatio)
     this.renderer.setSize(this.width, this.height)
-    this.renderer.setClearColor(0xffffff, 1)
-    this.renderer.toneMapping = THREE.NeutralToneMapping
-    this.renderer.toneMappingExposure = 0.25
+    this.renderer.setClearColor(0xd1e5e1, 1)
+    this.renderer.toneMapping = THREE.ACESFilmicToneMapping
+    this.renderer.toneMappingExposure = 0.2
     this.renderer.shadowMap.enabled = true
     this.renderer.shadowMap.type = THREE.PCFSoftShadowMap
     this.container.appendChild(this.renderer.domElement)
@@ -61,7 +61,7 @@ class Canvas {
     this.resize()
     this.render()
     this.setupResize()
-    this.settings()
+    // this.settings()
   }
 
   onScrollEvents(scrollAmount, maxScroll) {
@@ -154,12 +154,18 @@ class Canvas {
 
     this.gltfLoader.load('/models/porsche.glb', (gltf) => {
       this.porsche = gltf.scene
+      this.porsche.scale.set(1, 1, 1)
       this.porsche.traverse((child) => {
         child.castShadow = true
         child.receiveShadow = true
         if (child.material) {
           child.material.metalness = this.materialType.exterior.metalness
           child.material.roughness = this.materialType.exterior.roughness
+          if (child.material.map) {
+            child.material.map.minFilter = THREE.LinearFilter
+            child.material.map.generateMipmaps = false
+            child.material.map.needsUpdate = true
+          }
           child.material.needsUpdate = true
         }
       })
@@ -371,22 +377,22 @@ class Canvas {
       .add(this.settings, 'cameraRotX', -10, 10, 0.01)
       .listen()
       .onChange((value) => {
-        this.camera2.rotation.x = parseFloat(value.toFixed(2))
-        this.settings.cameraRotX = this.camera2.rotation.x.toFixed(2)
+        this.camera.rotation.x = parseFloat(value.toFixed(2))
+        this.settings.cameraRotX = this.camera.rotation.x.toFixed(2)
       })
     cameraFolder
       .add(this.settings, 'cameraRotY', -10, 10, 0.01)
       .listen()
       .onChange((value) => {
-        this.camera2.rotation.y = parseFloat(value.toFixed(2))
-        this.settings.cameraRotY = this.camera2.rotation.y.toFixed(2)
+        this.camera.rotation.y = parseFloat(value.toFixed(2))
+        this.settings.cameraRotY = this.camera.rotation.y.toFixed(2)
       })
     cameraFolder
       .add(this.settings, 'cameraRotZ', -10, 10, 0.01)
       .listen()
       .onChange((value) => {
-        this.camera2.rotation.z = parseFloat(value.toFixed(2))
-        this.settings.cameraRotZ = this.camera2.rotation.z.toFixed(2)
+        this.camera.rotation.z = parseFloat(value.toFixed(2))
+        this.settings.cameraRotZ = this.camera.rotation.z.toFixed(2)
       })
     cameraFolder
       .add(
@@ -533,8 +539,8 @@ class Canvas {
     this.directionalLight = new THREE.DirectionalLight(0xffffff, 7.5)
     this.directionalLight.position.set(-0.33, 0.33, 1.8)
     this.directionalLight.castShadow = true
-    this.directionalLight.shadow.mapSize.width = 1024
-    this.directionalLight.shadow.mapSize.height = 1024
+    this.directionalLight.shadow.mapSize.width = 1024 * 2
+    this.directionalLight.shadow.mapSize.height = 1024 * 2
     this.directionalLight.shadow.bias = -0.001
     this.scene.add(ambientLight)
     this.scene.add(this.directionalLight)
@@ -542,8 +548,8 @@ class Canvas {
 
   addObjects() {
     this.material = new THREE.MeshPhongMaterial({
-      color: 0xffffff,
-      opacity: 0,
+      color: 0xd1e5e1,
+      opacity: 1,
     })
 
     this.geometry = new THREE.CircleGeometry(5, 32)
