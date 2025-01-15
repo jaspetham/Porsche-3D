@@ -103,14 +103,14 @@ class Canvas {
       },
       backView: {
         position: {
-          x: 3.3,
-          y: 0.3,
-          z: 0.65,
+          x: 3,
+          y: 0.25,
+          z: 1.85,
         },
         rotation: {
-          x: -0.82,
-          y: -1.26,
-          z: -0.82,
+          x: -0.15,
+          y: 1,
+          z: 0.12,
         },
       },
       topView: {
@@ -136,9 +136,9 @@ class Canvas {
     )
     this.scene.add(this.cameraGroup1)
 
-    this.controls = new OrbitControls(this.camera, this.renderer.domElement)
-    this.controls.enableDamping = true
-    this.controls.maxPolarAngle = Math.PI / 2
+    // this.controls = new OrbitControls(this.camera, this.renderer.domElement)
+    // this.controls.enableDamping = true
+    // this.controls.maxPolarAngle = Math.PI / 2
   }
   clearScene() {
     this.renderer.renderLists.dispose()
@@ -169,7 +169,7 @@ class Canvas {
         this.porschDefaultValue.position.z,
       )
       this.porsche.rotation.y = 270 * (Math.PI / 180)
-      this.goToCameraView('frontView', 'exterior')
+      this.goToCameraView('backView', 'exterior')
       this.scene.add(this.porsche)
     })
   }
@@ -429,14 +429,14 @@ class Canvas {
       .listen()
       .onChange((value) => {
         this.directionalLight.position.y = parseFloat(value.toFixed(2))
-        this.settings.light2X = this.directionalLight.position.y.toFixed(2)
+        this.settings.light2Y = this.directionalLight.position.y.toFixed(2)
       })
     light2Folder
       .add(this.settings, 'light2Z', -20, 20, 0.01)
       .listen()
       .onChange((value) => {
         this.directionalLight.position.z = parseFloat(value.toFixed(2))
-        this.settings.light2X = this.directionalLight.position.z.toFixed(2)
+        this.settings.light2Z = this.directionalLight.position.z.toFixed(2)
       })
     // Add intensity control
     light2Folder
@@ -529,9 +529,9 @@ class Canvas {
   }
 
   addLights() {
-    const ambientLight = new THREE.AmbientLight(0xffffff, 2) // Low-intensity ambient light
-    this.directionalLight = new THREE.DirectionalLight(0xffffff, 5)
-    this.directionalLight.position.set(-0.16, 20, 12)
+    const ambientLight = new THREE.AmbientLight(0xffffff, 3) // Low-intensity ambient light
+    this.directionalLight = new THREE.DirectionalLight(0xffffff, 7.5)
+    this.directionalLight.position.set(-0.33, 0.33, 1.8)
     this.directionalLight.castShadow = true
     this.directionalLight.shadow.mapSize.width = 1024
     this.directionalLight.shadow.mapSize.height = 1024
@@ -546,13 +546,13 @@ class Canvas {
       opacity: 0,
     })
 
-    this.geometry = new THREE.PlaneGeometry(10, 10, 1)
+    this.geometry = new THREE.CircleGeometry(5, 32)
     this.plane = new THREE.Mesh(this.geometry, this.material)
     this.plane.rotation.x = -Math.PI / 2
     this.plane.frustumCulled = true
     this.plane.receiveShadow = true
     this.plane.position.y = -0.7
-    this.plane.position.z = -3
+    this.plane.position.z = 0.25
     this.scene.add(this.plane)
   }
 
