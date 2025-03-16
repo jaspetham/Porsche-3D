@@ -1,5 +1,4 @@
 import * as THREE from 'three'
-import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js'
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader'
 import { DRACOLoader } from 'three/examples/jsm/loaders/DRACOLoader.js'
 import * as dat from 'lil-gui'
@@ -11,11 +10,16 @@ class Canvas {
     this.width = this.container.offsetWidth
     this.height = this.container.offsetHeight
     this.renderer = new THREE.WebGLRenderer({ antialias: true })
+    this.renderer.setClearColor(0xececec, 1)
     this.renderer.setPixelRatio(window.devicePixelRatio)
     this.renderer.setSize(this.width, this.height)
-    this.renderer.setClearColor(0xd1e5e1, 1)
+    this.colorPalatte = {
+      primaryColor: 0xfffcef,
+      secondaryColor: 0xefebe0,
+    }
+    this.renderer.setClearColor(this.colorPalatte.primaryColor, 1)
     this.renderer.toneMapping = THREE.ACESFilmicToneMapping
-    this.renderer.toneMappingExposure = 0.2
+    this.renderer.toneMappingExposure = 0.8
     this.renderer.shadowMap.enabled = true
     this.renderer.shadowMap.type = THREE.PCFSoftShadowMap
     this.container.appendChild(this.renderer.domElement)
@@ -142,7 +146,6 @@ class Canvas {
   }
   clearScene() {
     this.renderer.renderLists.dispose()
-    this.renderer2.renderLists.dispose()
   }
 
   loadModels() {
@@ -322,12 +325,12 @@ class Canvas {
 
   settings() {
     this.settings = {
-      cameraX: this.cameraView.sideView.position.x,
-      cameraY: this.cameraView.sideView.position.y,
-      cameraZ: this.cameraView.sideView.position.z,
-      cameraRotX: this.cameraView.sideView.rotation.x,
-      cameraRotY: this.cameraView.sideView.rotation.y,
-      cameraRotZ: this.cameraView.sideView.rotation.z,
+      cameraX: this.cameraView.backView.position.x,
+      cameraY: this.cameraView.backView.position.y,
+      cameraZ: this.cameraView.backView.position.z,
+      cameraRotX: this.cameraView.backView.rotation.x,
+      cameraRotY: this.cameraView.backView.rotation.y,
+      cameraRotZ: this.cameraView.backView.rotation.z,
       light2X: this.directionalLight.position.x,
       light2Y: this.directionalLight.position.y,
       light2Z: this.directionalLight.position.z,
@@ -535,8 +538,8 @@ class Canvas {
   }
 
   addLights() {
-    const ambientLight = new THREE.AmbientLight(0xffffff, 3) // Low-intensity ambient light
-    this.directionalLight = new THREE.DirectionalLight(0xffffff, 7.5)
+    const ambientLight = new THREE.AmbientLight(0xffffff, 1) // Low-intensity ambient light
+    this.directionalLight = new THREE.DirectionalLight(0xffffff, 2)
     this.directionalLight.position.set(-0.33, 0.33, 1.8)
     this.directionalLight.castShadow = true
     this.directionalLight.shadow.mapSize.width = 1024 * 2
@@ -548,8 +551,8 @@ class Canvas {
 
   addObjects() {
     this.material = new THREE.MeshPhongMaterial({
-      color: 0xd1e5e1,
-      opacity: 1,
+      color: this.colorPalatte.secondaryColor,
+      opacity: 0.4,
     })
 
     this.geometry = new THREE.CircleGeometry(5, 32)

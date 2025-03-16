@@ -38,15 +38,14 @@ import AboutScene from './Scene/AboutScene.vue'
     position: absolute;
     font-family: var(--ff-special);
     top: 50%;
-    left: 2%;
+    left: 5%;
     transform: translateY(-50%);
     display: flex;
     font-size: 90px;
     font-weight: bold;
     text-transform: uppercase;
-    // color: #b2e0d6;
     color: var(--light-color);
-    text-shadow: 12px 12px 10px rgba(54, 69, 79, 0.8);
+    text-shadow: 8px 10px 10px rgba(54, 69, 79, 0.45);
   }
 }
 </style>

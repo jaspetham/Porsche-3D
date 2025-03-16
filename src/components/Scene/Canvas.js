@@ -3,7 +3,7 @@ import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js'
 import { Tween, Easing, Group } from 'three/examples/jsm/libs/tween.module.js'
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader'
 import { DRACOLoader } from 'three/examples/jsm/loaders/DRACOLoader.js'
-import { EXRLoader } from 'three/examples/jsm/Addons.js'
+// import { EXRLoader } from 'three/examples/jsm/Addons.js'
 import * as dat from 'lil-gui'
 import gsap from 'gsap'
 class Canvas {
@@ -15,9 +15,7 @@ class Canvas {
     this.renderer = new THREE.WebGLRenderer({ antialias: true })
     this.renderer.setPixelRatio(window.devicePixelRatio)
     this.renderer.setSize(this.width, this.height)
-    this.renderer.setClearColor(0x000000, 1)
-    this.renderer.toneMapping = THREE.ACESFilmicToneMapping
-    this.renderer.toneMappingExposure = 0.25
+    this.renderer.setClearColor(0xececec, 1)
     this.renderer.shadowMap.enabled = true
     this.renderer.shadowMap.type = THREE.PCFSoftShadowMap
     this.container.appendChild(this.renderer.domElement)
@@ -59,7 +57,7 @@ class Canvas {
     this.isPlaying = true
     this.initialCameraZ = 0
     this.loadModels()
-    this.loadEnvironmentMap()
+    // this.loadEnvironmentMap()
     this.loadAudios()
     this.addObjects()
     this.addLights()
@@ -71,7 +69,7 @@ class Canvas {
 
   onScrollEvents(scrollAmount, maxScroll) {
     if (this.initialCameraZ > 0) {
-      const movementRange = 7
+      const movementRange = 4.5
       const normalizedScroll = Math.min(1, Math.max(0, scrollAmount / maxScroll))
       let newCameraZ = this.initialCameraZ - normalizedScroll * movementRange
       const targetCameraZ = Math.min(this.initialCameraZ, newCameraZ)
@@ -159,11 +157,57 @@ class Canvas {
       })
   }
   loadEnvironmentMap() {
+    // this.loadingManager = new THREE.LoadingManager()
+    // const startButton = document.getElementById('start-button')
+    // const loadingValue = document.getElementById('loading-value')
+    // this.loadingManager.onLoad = () => {
+    //   const progress = { value: 0 }
+    //   this.tween = new Tween(progress)
+    //     .to({ value: 100 }, 900)
+    //     .easing(Easing.Quadratic.InOut)
+    //     .start()
+    //     .onUpdate(() => {
+    //       loadingValue.innerHTML = `${progress.value.toFixed()}%`
+    //     })
+    //     .onComplete(() => {
+    //       startButton.style.display = 'block'
+    //       loadingValue.parentNode.removeChild(loadingValue)
+    //       this.goToCameraView('frontView', 'exterior')
+    //     })
+    //   this.tweenGroup.add(this.tween)
+    //   window.scroll(0, 0)
+    // }
+    // this.environmentLoader = new EXRLoader(this.loadingManager).load(
+    //   'models/studio.exr',
+    //   (environmentMap) => {
+    //     // environmentMap.mapping = THREE.EquirectangularReflectionMapping
+    //     // this.scene.background = environmentMap
+    //     // this.scene.environment = environmentMap
+    //   },
+    // )
+  }
+  loadAudios() {
+    this.listener = new THREE.AudioListener()
+    this.camera.add(this.listener)
+    this.sound = new THREE.Audio(this.listener)
+    this.audioLoader = new THREE.AudioLoader()
+    this.audioLoader.load('audio/porsche_updated.mp3', (buffer) => {
+      this.sound.setBuffer(buffer)
+    })
+  }
+  loadModels() {
     this.loadingManager = new THREE.LoadingManager()
+    this.dracoLoader = new DRACOLoader()
+    this.dracoLoader.setDecoderPath('/draco/')
+    this.dracoLoader.setDecoderConfig({ type: 'js' })
+    this.gltfLoader = new GLTFLoader(this.loadingManager)
+    this.gltfLoader.setDRACOLoader(this.dracoLoader)
+
     const startButton = document.getElementById('start-button')
     const loadingValue = document.getElementById('loading-value')
     this.loadingManager.onLoad = () => {
       const progress = { value: 0 }
+
       this.tween = new Tween(progress)
         .to({ value: 100 }, 900)
         .easing(Easing.Quadratic.InOut)
@@ -179,31 +223,6 @@ class Canvas {
       this.tweenGroup.add(this.tween)
       window.scroll(0, 0)
     }
-
-    this.environmentLoader = new EXRLoader(this.loadingManager).load(
-      'models/studio.exr',
-      (environmentMap) => {
-        environmentMap.mapping = THREE.EquirectangularReflectionMapping
-        this.scene.background = environmentMap
-        this.scene.environment = environmentMap
-      },
-    )
-  }
-  loadAudios() {
-    this.listener = new THREE.AudioListener()
-    this.camera.add(this.listener)
-    this.sound = new THREE.Audio(this.listener)
-    this.audioLoader = new THREE.AudioLoader()
-    this.audioLoader.load('audio/porsche_updated.mp3', (buffer) => {
-      this.sound.setBuffer(buffer)
-    })
-  }
-  loadModels() {
-    this.dracoLoader = new DRACOLoader()
-    this.dracoLoader.setDecoderPath('/draco/')
-    this.dracoLoader.setDecoderConfig({ type: 'js' })
-    this.gltfLoader = new GLTFLoader(this.loadingManager)
-    this.gltfLoader.setDRACOLoader(this.dracoLoader)
 
     this.gltfLoader.load('/models/porsche.glb', (gltf) => {
       this.porsche = gltf.scene
@@ -637,10 +656,10 @@ class Canvas {
       roughness: 1,
       metalness: 0.2,
       envMapIntensity: 0,
-      color: 0xececec,
+      color: 0xf9f9f9,
     })
 
-    this.geometry = new THREE.PlaneGeometry(500, 500, 1)
+    this.geometry = new THREE.PlaneGeometry(100, 100, 1)
     this.plane = new THREE.Mesh(this.geometry, this.material)
     this.plane.rotation.x = -Math.PI / 2
     this.plane.frustumCulled = true
@@ -657,12 +676,6 @@ class Canvas {
     this.settings.cameraRotX = this.camera.rotation.x.toFixed(2)
     this.settings.cameraRotY = this.camera.rotation.y.toFixed(2)
     this.settings.cameraRotZ = this.camera.rotation.z.toFixed(2)
-    // this.settings.cameraX = this.camera2.position.x.toFixed(2)
-    // this.settings.cameraY = this.camera2.position.y.toFixed(2)
-    // this.settings.cameraZ = this.camera2.position.z.toFixed(2)
-    // this.settings.cameraRotX = this.camera2.rotation.x.toFixed(2)
-    // this.settings.cameraRotY = this.camera2.rotation.y.toFixed(2)
-    // this.settings.cameraRotZ = this.camera2.rotation.z.toFixed(2)
   }
 
   stop() {

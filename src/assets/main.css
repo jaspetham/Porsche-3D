@@ -19,7 +19,7 @@
   --info-color: #2ec6ff;
   --warning-color: #f9ce95;
   --border-default: #cbd4e1;
-  --font-color: #ffffff;
+  --font-color: #ca3132;
   --light-color: #f9f9f9;
   --white-color: #ffffff;
   --border-color: #cbd4e1;
@@ -192,7 +192,7 @@ html {
 }
 
 body {
-  /* overflow: hidden; */
+  overflow: hidden;
   color: var(--font-color);
   font-size: var(--fs-200);
   font-family: var(--ff-primary) !important;
