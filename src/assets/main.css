@@ -1,7 +1,10 @@
-@import url('https://fonts.googleapis.com/css2?family=Exo+2:ital,wght@0,100..900;1,100..900&family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap');
+/* @import url('https://fonts.googleapis.com/css2?family=Exo+2:ital,wght@0,100..900;1,100..900&family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap'); */
+@import url('https://fonts.googleapis.com/css2?family=Exo+2:ital,wght@0,100..900;1,100..900&family=Oxanium:wght@200..800&family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap');
+
 :root {
   --ff-primary: 'Poppins', sans-serif;
   --ff-secondary: 'Exo 2', serif;
+  --ff-special: 'Oxanium', sans-serif;
   --brand-color: #3baba0;
   --brand-dim: #ecf8f7;
   --primary-color: #2c2c2c;
@@ -17,7 +20,7 @@
   --warning-color: #f9ce95;
   --border-default: #cbd4e1;
   --font-color: #ffffff;
-  --light-color: #ececec;
+  --light-color: #f9f9f9;
   --white-color: #ffffff;
   --border-color: #cbd4e1;
   --header-h: 60px;
@@ -180,13 +183,16 @@
 .ff-secondary {
   font-family: var(--ff-secondary);
 }
+.ff-special {
+  font-family: var(--ff-special);
+}
 
 html {
   scroll-behavior: smooth;
 }
 
 body {
-  overflow: hidden;
+  /* overflow: hidden; */
   color: var(--font-color);
   font-size: var(--fs-200);
   font-family: var(--ff-primary) !important;

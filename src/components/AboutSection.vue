@@ -2,38 +2,51 @@
 import AboutScene from './Scene/AboutScene.vue'
 </script>
 <template>
-  <section id="about" class="relative clr-primary">
+  <section id="about" class="relative">
+    <div class="about-overlay"></div>
     <AboutScene />
-    <!-- <div class="w-full flex-1 flex flex-col justify-center flow">
-        <div>
-          <p class="subtitle fs-250">A Legacy of Power, Precision, and Passion</p>
-          <p class="fs-200 pt-3">
-            Since its inception, the Porsche GT3 RS has stood as a beacon of unrelenting
-            performance. Born from the racetrack and perfected for the road, it combines motorsport
-            DNA with unparalleled luxury
-          </p>
-        </div>
-        <div>
-          <p class="subtitle fs-250">Philosophy</p>
-          <p class="fs-200 pt-3">
-            Every line, every curve, and every roar of the engine tells a story of dedication to
-            excellence. From its lightweight design to its cutting-edge aerodynamics, the GT3 RS is
-            crafted for those who demand the extraordinary.
-          </p>
-        </div>
-      </div> -->
+    <div class="details w-full">
+      <div class="p-5 px-10">
+        <p>Porsche</p>
+        <p>Power</p>
+        <p>Precision</p>
+        <p>Passion</p>
+      </div>
+    </div>
   </section>
 </template>
 <style lang="scss">
-.about-wrapper {
-  background: #060f16;
-  color: white;
+.about-overlay {
+  background-color: rgba(54, 69, 79, 0.25);
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  border-top-left-radius: 5rem;
+  border-top-right-radius: 5rem;
 }
 #about-scene {
   height: 100dvh;
   canvas {
     border-top-left-radius: 5rem;
     border-top-right-radius: 5rem;
+  }
+}
+#about {
+  .details {
+    position: absolute;
+    font-family: var(--ff-special);
+    top: 50%;
+    left: 2%;
+    transform: translateY(-50%);
+    display: flex;
+    font-size: 90px;
+    font-weight: bold;
+    text-transform: uppercase;
+    // color: #b2e0d6;
+    color: var(--light-color);
+    text-shadow: 12px 12px 10px rgba(54, 69, 79, 0.8);
   }
 }
 </style>
