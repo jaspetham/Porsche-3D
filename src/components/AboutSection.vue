@@ -21,7 +21,7 @@ import AboutScene from './Scene/AboutScene.vue'
   position: absolute;
   left: 0;
   top: 0;
-  width: 100%;
+  width: 101%;
   height: 100%;
   border-top-left-radius: 5rem;
   border-top-right-radius: 5rem;
