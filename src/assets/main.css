@@ -6,24 +6,13 @@
   --ff-secondary: 'Exo 2', serif;
   --ff-special: 'Oxanium', sans-serif;
   --brand-color: #3baba0;
-  --brand-dim: #ecf8f7;
   --primary-color: #2c2c2c;
-  --secondary-color: #aaaec6;
-  --accent-color-1: #e10600;
+  --secondary-color: #eee5da;
   --line-height-1: 1.2em;
-  --success-dim: #e3fcec;
-  --success-color: #38c172;
-  --error-dim: #fff0f0;
-  --error-color: #d92d20;
-  --info-dim: #ebfaff;
-  --info-color: #2ec6ff;
-  --warning-color: #f9ce95;
-  --border-default: #cbd4e1;
   --font-color: #ca3132;
+  --dark-color: #262424;
   --light-color: #f9f9f9;
   --white-color: #ffffff;
-  --border-color: #cbd4e1;
-  --header-h: 60px;
   --section-gap: 4rem;
   --border-radius-1: 4px;
   --border-radius-2: 8px;
@@ -192,7 +181,7 @@ html {
 }
 
 body {
-  overflow: hidden;
+  /* overflow: hidden; */
   color: var(--font-color);
   font-size: var(--fs-200);
   font-family: var(--ff-primary) !important;

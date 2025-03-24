@@ -16,6 +16,7 @@
     "format": "prettier --write src/"
   },
   "dependencies": {
+    "aos": "^2.3.4",
     "gsap": "^3.12.5",
     "lil-gui": "^0.20.0",
     "pinia": "^2.2.6",

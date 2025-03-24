@@ -29,7 +29,7 @@ const startAnimation = () => {
   font-weight: 100;
   color: #f9f0ec;
   background: radial-gradient(circle at center center, #5d5d5d 0, #090909 58%);
-  // display: none;
+  display: none;
 }
 
 #start-button {
