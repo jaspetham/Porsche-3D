@@ -1,7 +1,7 @@
 <script setup lang="ts"></script>
 <template>
-  <header id="header" class="header-wrapper show">
-    <!-- <header id="header" class="header-wrapper"> -->
+  <!-- <header id="header" class="header-wrapper show"> -->
+  <header id="header" class="header-wrapper">
     <nav class="flex justify-center">
       <RouterLink class="header-link fs-200 font-semibold" to="/">Home</RouterLink>
       <RouterLink class="header-link fs-200 font-semibold" to="/">About</RouterLink>

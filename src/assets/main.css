@@ -13,6 +13,7 @@
   --dark-color: #262424;
   --light-color: #f9f9f9;
   --white-color: #ffffff;
+  --header-h: 60px;
   --section-gap: 4rem;
   --border-radius-1: 4px;
   --border-radius-2: 8px;
@@ -181,7 +182,7 @@ html {
 }
 
 body {
-  /* overflow: hidden; */
+  overflow: hidden;
   color: var(--font-color);
   font-size: var(--fs-200);
   font-family: var(--ff-primary) !important;

@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import porscheLogo from '@/assets/porsche_logo.svg'
-import porscheVector from '@/assets/porsche-vector-1.png'
-import SectionWrapper from './common/SectionWrapper.vue'
+import porscheLogo from "@/assets/porsche_logo.svg";
+import porscheVector from "@/assets/porsche-vector-1.png";
+import SectionWrapper from "./common/SectionWrapper.vue";
 </script>
 <template>
   <section id="hero" class="first relative">
@@ -16,10 +16,16 @@ import SectionWrapper from './common/SectionWrapper.vue'
       <div class="hero-detail flex items-center justify-between w-full mt-6 ff-secondary">
         <div class="porsche-hero movement flex items-center gap-3">
           <img class="porsche-logo" :src="porscheLogo" alt="porsche logo" />
-          <p class="max-w-[20ch] font-bold fs-250">The Porsche GT3 RS: A New Era of Performance</p>
+          <p class="max-w-[20ch] font-medium fs-250">
+            The Porsche GT3 RS: A New Era of Performance
+          </p>
         </div>
         <div>
-          <img :src="porscheVector" class="porsche-vector movement" alt="porsche vector" />
+          <img
+            :src="porscheVector"
+            class="porsche-vector movement"
+            alt="porsche vector"
+          />
         </div>
       </div>
     </SectionWrapper>
@@ -39,9 +45,7 @@ import SectionWrapper from './common/SectionWrapper.vue'
     left: 50%;
     opacity: 0;
     transform: translateX(-50%);
-    transition:
-      transform 2.5s ease-in,
-      opacity 0.5s ease-in;
+    transition: transform 2.5s ease-in, opacity 0.5s ease-in;
   }
 }
 .first-title {

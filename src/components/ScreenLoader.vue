@@ -1,12 +1,12 @@
 <script lang="ts" setup>
-import { useCanvasStore } from '@/stores/CanvasInstance'
-const canvasStore = useCanvasStore()
+import { useCanvasStore } from "@/stores/CanvasInstance";
+const canvasStore = useCanvasStore();
 
 const startAnimation = () => {
   if (canvasStore.canvasInstance) {
-    canvasStore.canvasInstance.startAudio()
+    canvasStore.canvasInstance.startAudio();
   }
-}
+};
 </script>
 <template>
   <div id="loading-text-intro">
@@ -20,7 +20,7 @@ const startAnimation = () => {
   position: absolute;
   width: 100vw;
   height: 100%;
-  font-family: 'Josefin Sans', sans-serif;
+  font-family: "Josefin Sans", sans-serif;
   display: flex;
   align-content: center;
   justify-content: center;
@@ -29,7 +29,7 @@ const startAnimation = () => {
   font-weight: 100;
   color: #f9f0ec;
   background: radial-gradient(circle at center center, #5d5d5d 0, #090909 58%);
-  display: none;
+  // display: none;
 }
 
 #start-button {
