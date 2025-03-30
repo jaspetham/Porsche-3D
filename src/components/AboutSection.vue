@@ -1,20 +1,22 @@
 <script setup lang="ts">
 import { ref, watch } from "vue";
-import { detailsInfo } from "@/type";
+import type { aboutDataInterface } from "@/type";
+import { detailsInfoEnum } from "@/type";
 import AboutScene from "./Scene/AboutScene.vue";
 import DetailPage from "./common/DetailPage.vue";
+import aboutData from "@/assets/data/aboutData.json";
 
-const detailPageState = ref<detailsInfo | null>(null);
+const aboutDataState = ref<aboutDataInterface | null>(null);
 
-const viewDetails = (details: detailsInfo) => {
-  detailPageState.value = details;
+const viewDetails = (data: aboutDataInterface) => {
+  aboutDataState.value = data;
 };
 
 const handleClose = () => {
-  detailPageState.value = null;
+  aboutDataState.value = null;
 };
 
-watch(detailPageState, (newValue) => {
+watch(aboutDataState, (newValue) => {
   document.body.style.overflow = newValue ? "hidden" : "";
 });
 </script>
@@ -26,14 +28,14 @@ watch(detailPageState, (newValue) => {
       <div class="p-5 px-10">
         <div
           class="cursor-pointer"
-          @click="viewDetails(detailsInfo.porsche)"
+          @click="viewDetails(aboutData[detailsInfoEnum.porsche])"
           data-aos="fade-right"
         >
           Porsche
         </div>
         <div
           class="cursor-pointer"
-          @click="viewDetails(detailsInfo.power)"
+          @click="viewDetails(aboutData[detailsInfoEnum.power])"
           data-aos="fade-right"
           data-aos-delay="50"
         >
@@ -41,7 +43,7 @@ watch(detailPageState, (newValue) => {
         </div>
         <div
           class="cursor-pointer"
-          @click="viewDetails(detailsInfo.percision)"
+          @click="viewDetails(aboutData[detailsInfoEnum.percision])"
           data-aos="fade-right"
           data-aos-delay="100"
         >
@@ -49,7 +51,7 @@ watch(detailPageState, (newValue) => {
         </div>
         <div
           class="cursor-pointer"
-          @click="viewDetails(detailsInfo.passions)"
+          @click="viewDetails(aboutData[detailsInfoEnum.passions])"
           data-aos="fade-right"
           data-aos-delay="150"
         >
@@ -59,8 +61,8 @@ watch(detailPageState, (newValue) => {
     </div>
     <Transition name="detail">
       <DetailPage
-        v-if="detailPageState != null"
-        :detail="detailPageState"
+        v-if="aboutDataState != null"
+        :data="aboutDataState"
         @close="handleClose"
       />
     </Transition>

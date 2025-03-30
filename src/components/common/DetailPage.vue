@@ -1,13 +1,10 @@
 <script setup lang="ts">
-import type { detailsInfo } from "@/type";
-import skeleton from "@/assets/detail/skeleton.jpg";
-import engine from "@/assets/detail/engine.avif";
-import aerobar from "@/assets/detail/aerobar.avif";
-import brake from "@/assets/detail/brake.avif";
-import { onMounted, onUnmounted, ref } from "vue";
+import type { aboutDataInterface } from "@/type";
+import { onMounted, onUnmounted, ref, nextTick } from "vue";
+import { gsap } from "gsap";
 
 const props = defineProps<{
-  detail: detailsInfo;
+  data: aboutDataInterface;
 }>();
 
 const emit = defineEmits<{
@@ -15,20 +12,168 @@ const emit = defineEmits<{
 }>();
 
 const closeDetail = () => {
-  emit("close");
+  closing.value = true;
+  pageCloseAnimation(() => {
+    emit("close"); // Emit the close event after the animation finishes
+  });
 };
 
 const startAnimation = ref<boolean>(true);
-
-const images: string[] = [engine, aerobar, brake];
+const closing = ref<boolean>(false);
+const titleRef = ref<HTMLElement | null>(null);
+const detailBoxRef = ref<HTMLElement | null>(null);
 const currentImageIndex = ref<number>(0);
+
 const cycleImages = () => {
-  currentImageIndex.value = (currentImageIndex.value + 1) % images.length;
+  currentImageIndex.value = (currentImageIndex.value + 1) % props.data.images.length;
 };
 
+const pageAnimation = () => {
+  if (titleRef.value) {
+    const characters = titleRef.value.querySelectorAll("span");
+    gsap
+      .timeline()
+      .fromTo(
+        characters,
+        {
+          opacity: 0, // Start with opacity 0
+        },
+        {
+          opacity: 1, // Fade-in faster
+          duration: 0.75, // Shorter duration for opacity
+          stagger: 0.05, // Delay between each character
+          ease: "power2.out",
+        }
+      )
+      .fromTo(
+        characters,
+        {
+          y: 50, // Start 50px above the original position
+        },
+        {
+          y: 0, // Move to the original position
+          duration: 0.75, // Longer duration for the upward movement
+          stagger: 0.1, // Same stagger as opacity
+          ease: "power2.out",
+        },
+        "<"
+      );
+  }
+  if (detailBoxRef.value) {
+    gsap
+      .timeline()
+      .fromTo(
+        detailBoxRef.value,
+        { height: "0" }, // Start with height 0%
+        {
+          height: "100%", // Animate to height 100%
+          duration: 0.75, // Duration for the height animation
+          ease: "power2.out", // Smooth easing
+        }
+      )
+      .fromTo(
+        document.querySelector(".context-detail"),
+        {
+          opacity: 0, // Start with opacity 0
+        },
+        {
+          opacity: 1, // Fade-in faster
+          duration: 0.25, // Shorter duration for opacity
+          ease: "power2.out",
+        },
+        "-=0.25"
+      );
+  }
+};
+
+const pageCloseAnimation = (onComplete: () => void) => {
+  const closeButton = document.querySelector(".detail-close");
+  if (titleRef.value) {
+    const characters = titleRef.value.querySelectorAll("span");
+    gsap
+      .timeline()
+      .fromTo(
+        characters,
+        {
+          opacity: 1, // Start with opacity 0
+        },
+        {
+          opacity: 0, // Fade-in faster
+          duration: 0.75, // Shorter duration for opacity
+          ease: "power2.out",
+        }
+      )
+      .fromTo(
+        characters,
+        {
+          y: 0, // Start 50px above the original position
+        },
+        {
+          y: 50, // Move to the original position
+          duration: 0.75, // Longer duration for the upward movement
+          stagger: 0.05,
+          ease: "power2.out",
+        },
+        "<"
+      );
+  }
+  if (detailBoxRef.value) {
+    gsap
+      .timeline()
+      .fromTo(
+        document.querySelector(".context-detail"),
+        {
+          opacity: 1, // Start with opacity 0
+        },
+        {
+          opacity: 0, // Fade-in faster
+          duration: 0.1, // Shorter duration for opacity
+          ease: "power2.out",
+        },
+        "<"
+      )
+      .fromTo(
+        detailBoxRef.value,
+        { height: "100%" }, // Start with height 0%
+        {
+          height: "0", // Animate to height 100%
+          duration: 0.75, // Duration for the height animation
+          ease: "power2.out", // Smooth easing
+        }
+      )
+      .call(onComplete, undefined, "-=0.4")
+      .fromTo(
+        closeButton,
+        {
+          width: "80", // Start with opacity 0
+        },
+        {
+          width: 0, // Fade-in faster
+          duration: 1.5, // Shorter duration for opacity
+          ease: "power2.out",
+        },
+        "<"
+      )
+      .fromTo(
+        closeButton,
+        {
+          opacity: 1, // Start with opacity 0
+        },
+        {
+          opacity: 0,
+          duration: 0.5, // Shorter duration for opacity
+          ease: "power2.out",
+        },
+        "<"
+      );
+  }
+};
 let intervalId: number | null = null;
 onMounted(() => {
   intervalId = setInterval(cycleImages, 250);
+  nextTick(() => {
+    pageAnimation();
+  });
 });
 onUnmounted(() => {
   if (intervalId !== null) {
@@ -38,27 +183,30 @@ onUnmounted(() => {
 </script>
 <template>
   <section :class="'detail-page ' + `${startAnimation ? 'start' : ''}`">
-    <div class="detail-bg" :style="{ backgroundImage: `url(${skeleton})` }"></div>
+    <div
+      class="detail-bg"
+      :style="{ backgroundImage: `url(${props.data.backgroundImage})` }"
+    ></div>
     <div class="flex relative h-full">
       <div class="flex-1"></div>
-      <div class="context flex-1 h-full">
-        <div class="flex w-full justify-between items-start">
-          <p class="font-bold fs-900 uppercase">{{ props.detail }}</p>
+      <div ref="detailBoxRef" class="context flex-1 h-full">
+        <div class="flex w-full justify-between items-start p-7">
+          <p ref="titleRef" class="font-bold fs-900 uppercase animated-title">
+            <span v-for="(char, index) in props.data.title.split('')" :key="index">
+              {{ char }}
+            </span>
+          </p>
           <button @click="closeDetail" class="detail-close fs-100">Close</button>
         </div>
         <div class="context-detail flow mt-20 w-5/6 mx-auto">
           <div class="detail-img-slide mx-auto w-2/4">
             <div
               class="detail-img"
-              :style="{ backgroundImage: `url(${images[currentImageIndex]})` }"
+              :style="{ backgroundImage: `url(${props.data.images[currentImageIndex]})` }"
             ></div>
           </div>
           <p class="fs-250 ff-p-medium">
-            Lorem ipsum dolor sit amet consectetur adipisicing elit. Vitae sunt eligendi
-            sit culpa odit, laboriosam eius? Eius ipsam neque in aliquid quod eaque
-            repellat voluptates! Saepe excepturi incidunt aperiam consequatur nemo,
-            ratione temporibus consequuntur sequi quis consectetur. Error ab, excepturi
-            eaque aliquid odit magni nam earum laboriosam temporibus voluptatem fugit!
+            {{ props.data.description }}
           </p>
         </div>
       </div>
@@ -93,11 +241,11 @@ onUnmounted(() => {
   background: var(--font-color);
   color: white;
   padding: 6px 1rem;
+  width: 80px;
 }
 
 .context {
   background-color: white;
-  padding: 1rem;
 }
 .detail-img {
   background-repeat: no-repeat;
@@ -107,5 +255,8 @@ onUnmounted(() => {
   height: 400px;
   width: 100%;
   margin: 0 auto;
+}
+.animated-title span {
+  display: inline-block;
 }
 </style>

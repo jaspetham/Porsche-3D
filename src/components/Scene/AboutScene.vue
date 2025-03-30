@@ -1,16 +1,16 @@
 <script lang="ts" setup>
-import Canvas from './Canvas_second'
-import { onMounted } from 'vue'
-import { useCanvasStore } from '@/stores/CanvasInstance'
+import Canvas from "./About_Canvas";
+import { onMounted } from "vue";
+import { useCanvasStore } from "@/stores/CanvasInstance";
 
-const canvasStore = useCanvasStore()
+const canvasStore = useCanvasStore();
 
 onMounted(() => {
   const secondaryCanvasInstance = new Canvas({
-    dom: document.getElementById('about-scene'),
-  })
-  canvasStore.setSecondaryCanvasInstance(secondaryCanvasInstance)
-})
+    dom: document.getElementById("about-scene"),
+  });
+  canvasStore.setSecondaryCanvasInstance(secondaryCanvasInstance);
+});
 </script>
 
 <template>

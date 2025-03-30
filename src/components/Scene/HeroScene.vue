@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import Canvas from './Canvas'
+import Canvas from './Hero_Canvas'
 import { onMounted, watch } from 'vue'
 import { useCanvasStore } from '@/stores/CanvasInstance'
 import { useScrollEvent } from '@/composables/useScrollEvent'

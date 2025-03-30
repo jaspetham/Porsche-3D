@@ -178,7 +178,7 @@ class Canvas {
         this.porschDefaultValue.position.z,
       )
       this.porsche.rotation.y = 270 * (Math.PI / 180)
-      this.goToCameraView('backView', 'exterior')
+      // this.goToCameraView('frontView', 'exterior')
       this.scene.add(this.porsche)
     })
   }
@@ -591,12 +591,58 @@ class Canvas {
     }
   }
 
+  setupCameraAnimation() {
+    console.log('wtf')
+    const radius = 3.25
+    const duration = 30 // seconds for full rotation
+
+    // Store initial positions
+    this.cameraStartPosition = {
+      x: Math.cos(0) * radius,
+      y: 0.2,
+      z: Math.sin(0) * radius + 0.5,
+    }
+
+    // Create GSAP animation
+    this.cameraAnimation = gsap.fromTo(
+      this.camera.position,
+      {
+        x: Math.cos(0) * radius,
+        y: 0.2,
+        z: Math.sin(0) * radius + 0.5,
+      },
+      {
+        x: Math.cos(Math.PI * 2) * radius,
+        z: Math.sin(Math.PI * 2) * radius + 0.5,
+        duration: duration,
+        ease: 'sine.inOut',
+        repeat: -1,
+        yoyo: true, // Makes it smoothly reverse direction
+        onUpdate: () => this.camera.lookAt(0.5, 0, 1),
+      },
+    )
+  }
+
   render() {
-    if (!this.isPlaying) return
     this.elapsedTime = this.time.getElapsedTime()
     // const deltaTime = this.elapsedTime - this.previousTime
     // this.previousTime = this.elapsedTime
     // this.controls.update()
+    const radius = 3.25
+    const speed = 0.04
+    const angle = this.elapsedTime * speed
+
+    // GSAP smooth position update
+    gsap.to(this.camera.position, {
+      x: Math.cos(angle) * radius,
+      z: Math.sin(angle) * radius + 0.5,
+      y: 0.2,
+      duration: 0.5, // Adjust for responsiveness
+      ease: 'power1.out',
+    })
+
+    this.camera.lookAt(0.5, 0, 1)
+
     requestAnimationFrame(this.render.bind(this))
     this.renderer.render(this.scene, this.camera)
   }

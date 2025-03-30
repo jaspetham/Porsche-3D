@@ -1,0 +1,30 @@
+{
+  "Porsche": {
+    "title": "Porsche",
+    "description": "Porsche is a legendary German automaker renowned for its precision engineering, iconic design, and motorsport heritage. Known for producing high-performance sports cars, the brand embodies a perfect blend of luxury and speed. The Porsche crest symbolizes innovation, passion, and a commitment to excellence, making it a benchmark in the automotive world.",
+    "backgroundImage": "",
+    "images": []
+  },
+  "Power": {
+    "title": "Power",
+    "description": "The Porsche GT3 RS is a testament to raw power and engineering mastery. Equipped with a naturally aspirated 4.0-liter flat-six engine, it delivers an exhilarating 518 horsepower, enabling breathtaking acceleration and top-tier performance. This power is harnessed with precision, offering an unmatched driving experience on both the track and the road.",
+    "backgroundImage": "/assets/detail/skeleton.jpg",
+    "images": [
+      "/assets/detail/engine.avif",
+      "/assets/detail/aerobar.avif",
+      "/assets/detail/brake.avif"
+    ]
+  },
+  "Percision": {
+    "title": "Precision",
+    "description": "The Porsche GT3 RS exemplifies precision in every detail, from its aerodynamically optimized body to its race-inspired suspension. Every component is meticulously engineered to enhance performance, handling, and driver feedback. This relentless pursuit of precision ensures that the GT3 RS delivers unparalleled control and confidence at high speeds.",
+    "backgroundImage": "",
+    "images": []
+  },
+  "Passions": {
+    "title": "Passions",
+    "description": "The Porsche GT3 RS ignites the passions of automotive enthusiasts worldwide. Designed for those who live and breathe motorsport, it represents the pinnacle of Porsche's dedication to performance and innovation. Whether on the track or admired in a garage, the GT3 RS inspires a deep connection to the art of driving.",
+    "backgroundImage": "",
+    "images": []
+  }
+}
