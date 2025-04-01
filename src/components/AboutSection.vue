@@ -41,6 +41,7 @@ watch(aboutDataState, (newValue) => {
         >
           Power
         </div>
+        <!-- https://www.elferspot.com/en/magazin/porsche-active-aerodynamics-paa/ -->
         <div
           class="cursor-pointer"
           @click="viewDetails(aboutData[detailsInfoEnum.percision])"
@@ -49,6 +50,7 @@ watch(aboutDataState, (newValue) => {
         >
           Precision
         </div>
+        <!-- https://www.porsche.com/international/accessoriesandservice/exclusive-manufaktur/ -->
         <div
           class="cursor-pointer"
           @click="viewDetails(aboutData[detailsInfoEnum.passions])"
