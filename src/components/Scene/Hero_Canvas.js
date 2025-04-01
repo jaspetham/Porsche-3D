@@ -175,15 +175,9 @@ class Canvas {
     }
 
     this.loadingManager.onProgress = (url, itemsLoaded, itemsTotal) => {
-      const targetProgress = (itemsLoaded / itemsTotal) * 100
-      const progress = { value: parseFloat(loadingValue.innerHTML) || 0 }
-      new Tween(progress)
-        .to({ value: targetProgress }, 300)
-        .easing(Easing.Quadratic.InOut)
-        .onUpdate(() => {
-          loadingValue.innerHTML = `${progress.value.toFixed(0)}%`
-        })
-        .start()
+      const progress = (itemsLoaded / itemsTotal) * 100
+      // Update progress directly without TWEEN to avoid animation delays
+      loadingValue.innerHTML = `${progress.toFixed(0)}%`
     }
 
     this.loadingManager.onLoad = () => {
