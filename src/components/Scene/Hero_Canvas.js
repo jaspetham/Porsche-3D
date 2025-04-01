@@ -167,23 +167,29 @@ class Canvas {
   loadAssets() {
     this.loadingManager = new THREE.LoadingManager()
 
-    const startButton = document.getElementById('start-button')
     const loadingValue = document.getElementById('loading-value')
+    const loadingWrapper = document.getElementById('loading-wrapper')
 
     this.loadingManager.onStart = () => {
       loadingValue.innerHTML = '0%'
     }
-
+    let maxProgress = 0
     this.loadingManager.onProgress = (url, itemsLoaded, itemsTotal) => {
-      const progress = (itemsLoaded / itemsTotal) * 100
-      // Update progress directly without TWEEN to avoid animation delays
+      // const progress = (itemsLoaded / itemsTotal) * 100
+      let progress = (itemsLoaded / itemsTotal) * 100
+
+      // Ensure progress never decreases
+      if (progress < maxProgress) {
+        progress = maxProgress
+      } else {
+        maxProgress = progress
+      }
       loadingValue.innerHTML = `${progress.toFixed(0)}%`
     }
 
     this.loadingManager.onLoad = () => {
       // Hide loading value and show start button
-      loadingValue.parentNode.removeChild(loadingValue)
-      startButton.style.display = 'block'
+      loadingWrapper.classList.add('loaded')
       // Proceed to camera view
       this.goToCameraView('frontView', 'exterior')
       window.scroll(0, 0)
