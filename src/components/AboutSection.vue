@@ -17,7 +17,7 @@ const handleClose = () => {
 };
 
 watch(aboutDataState, (newValue) => {
-  document.body.style.overflow = newValue ? "hidden" : "";
+  document.body.style.overflowY = newValue != null ? "hidden" : "auto";
 });
 </script>
 <template>

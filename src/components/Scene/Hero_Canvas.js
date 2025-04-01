@@ -167,15 +167,32 @@ class Canvas {
   loadAssets() {
     this.loadingManager = new THREE.LoadingManager()
 
-    this.loadingManager.onStart = (url, itemsLoaded, itemsTotal) => {
-      console.log(`Started loading: ${url}. Loaded ${itemsLoaded} of ${itemsTotal} files.`)
-      loadingValue.innerHTML = '0%' // Initialize progress
+    const startButton = document.getElementById('start-button')
+    const loadingValue = document.getElementById('loading-value')
+
+    this.loadingManager.onStart = () => {
+      loadingValue.innerHTML = '0%'
     }
 
     this.loadingManager.onProgress = (url, itemsLoaded, itemsTotal) => {
-      // Calculate the actual progress percentage
-      const progress = (itemsLoaded / itemsTotal) * 100
-      loadingValue.innerHTML = `${progress.toFixed(0)}%` // Update progress in real-time
+      const targetProgress = (itemsLoaded / itemsTotal) * 100
+      const progress = { value: parseFloat(loadingValue.innerHTML) || 0 }
+      new Tween(progress)
+        .to({ value: targetProgress }, 300)
+        .easing(Easing.Quadratic.InOut)
+        .onUpdate(() => {
+          loadingValue.innerHTML = `${progress.value.toFixed(0)}%`
+        })
+        .start()
+    }
+
+    this.loadingManager.onLoad = () => {
+      // Hide loading value and show start button
+      loadingValue.parentNode.removeChild(loadingValue)
+      startButton.style.display = 'block'
+      // Proceed to camera view
+      this.goToCameraView('frontView', 'exterior')
+      window.scroll(0, 0)
     }
 
     this.dracoLoader = new DRACOLoader()
@@ -183,9 +200,6 @@ class Canvas {
     this.dracoLoader.setDecoderConfig({ type: 'js' })
     this.gltfLoader = new GLTFLoader(this.loadingManager)
     this.gltfLoader.setDRACOLoader(this.dracoLoader)
-
-    const startButton = document.getElementById('start-button')
-    const loadingValue = document.getElementById('loading-value')
 
     this.textures = {}
     const assetPaths = [
@@ -210,23 +224,10 @@ class Canvas {
 
     this.textureLoader = new THREE.TextureLoader(this.loadingManager)
 
-    // Load each asset and store the texture in the textures object
     assetPaths.forEach((path) => {
-      // Extract the file name (without the path) to use as the key
       const fileName = path.split('/').pop()
-      // Load the texture and store it in the textures object
       this.textures[fileName] = this.textureLoader.load(path)
     })
-
-    this.loadingManager.onLoad = () => {
-      console.log('All assets loaded!')
-      // Hide loading value and show start button
-      loadingValue.parentNode.removeChild(loadingValue)
-      startButton.style.display = 'block'
-      // Proceed to camera view
-      this.goToCameraView('frontView', 'exterior')
-      window.scroll(0, 0)
-    }
 
     this.gltfLoader.load('/models/porsche.glb', (gltf) => {
       this.porsche = gltf.scene
