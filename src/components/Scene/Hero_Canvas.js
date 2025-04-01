@@ -55,7 +55,7 @@ class Canvas {
     this.tweenGroup = new Group()
     this.isPlaying = true
     this.initialCameraZ = 0
-    this.loadModels()
+    this.loadAssets()
     this.loadAudios()
     this.addObjects()
     this.addLights()
@@ -146,13 +146,14 @@ class Canvas {
   }
 
   introAnimation() {
-    this.introTween = new Tween(this.camera.position.set(0, 4, 2.7))
+    this.introTween = new Tween.Tween(this.camera.position.set(0, 4, 2.7))
       .to({ x: 0, y: 2.4, z: 8.8 }, 3500)
       .easing(Easing.Quadratic.InOut)
       .start()
       .onComplete(function () {
-        Tween.remove(this)
+        this.introTween = null
       })
+    this.tweenGroup.add(this.introTween)
   }
   loadAudios() {
     this.listener = new THREE.AudioListener()
@@ -163,8 +164,20 @@ class Canvas {
       this.sound.setBuffer(buffer)
     })
   }
-  loadModels() {
+  loadAssets() {
     this.loadingManager = new THREE.LoadingManager()
+
+    this.loadingManager.onStart = (url, itemsLoaded, itemsTotal) => {
+      console.log(`Started loading: ${url}. Loaded ${itemsLoaded} of ${itemsTotal} files.`)
+      loadingValue.innerHTML = '0%' // Initialize progress
+    }
+
+    this.loadingManager.onProgress = (url, itemsLoaded, itemsTotal) => {
+      // Calculate the actual progress percentage
+      const progress = (itemsLoaded / itemsTotal) * 100
+      loadingValue.innerHTML = `${progress.toFixed(0)}%` // Update progress in real-time
+    }
+
     this.dracoLoader = new DRACOLoader()
     this.dracoLoader.setDecoderPath('/draco/')
     this.dracoLoader.setDecoderConfig({ type: 'js' })
@@ -204,22 +217,14 @@ class Canvas {
       // Load the texture and store it in the textures object
       this.textures[fileName] = this.textureLoader.load(path)
     })
-    this.loadingManager.onLoad = () => {
-      const progress = { value: 0 }
 
-      this.tween = new Tween(progress)
-        .to({ value: 100 }, 900)
-        .easing(Easing.Quadratic.InOut)
-        .start()
-        .onUpdate(() => {
-          loadingValue.innerHTML = `${progress.value.toFixed()}%`
-        })
-        .onComplete(() => {
-          startButton.style.display = 'block'
-          loadingValue.parentNode.removeChild(loadingValue)
-          this.goToCameraView('frontView', 'exterior')
-        })
-      this.tweenGroup.add(this.tween)
+    this.loadingManager.onLoad = () => {
+      console.log('All assets loaded!')
+      // Hide loading value and show start button
+      loadingValue.parentNode.removeChild(loadingValue)
+      startButton.style.display = 'block'
+      // Proceed to camera view
+      this.goToCameraView('frontView', 'exterior')
       window.scroll(0, 0)
     }
 
