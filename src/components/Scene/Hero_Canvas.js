@@ -3,7 +3,6 @@ import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js'
 import { Tween, Easing, Group } from 'three/examples/jsm/libs/tween.module.js'
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader'
 import { DRACOLoader } from 'three/examples/jsm/loaders/DRACOLoader.js'
-// import { EXRLoader } from 'three/examples/jsm/Addons.js'
 import * as dat from 'lil-gui'
 import gsap from 'gsap'
 class Canvas {
@@ -57,7 +56,6 @@ class Canvas {
     this.isPlaying = true
     this.initialCameraZ = 0
     this.loadModels()
-    // this.loadEnvironmentMap()
     this.loadAudios()
     this.addObjects()
     this.addLights()
@@ -156,41 +154,11 @@ class Canvas {
         Tween.remove(this)
       })
   }
-  loadEnvironmentMap() {
-    // this.loadingManager = new THREE.LoadingManager()
-    // const startButton = document.getElementById('start-button')
-    // const loadingValue = document.getElementById('loading-value')
-    // this.loadingManager.onLoad = () => {
-    //   const progress = { value: 0 }
-    //   this.tween = new Tween(progress)
-    //     .to({ value: 100 }, 900)
-    //     .easing(Easing.Quadratic.InOut)
-    //     .start()
-    //     .onUpdate(() => {
-    //       loadingValue.innerHTML = `${progress.value.toFixed()}%`
-    //     })
-    //     .onComplete(() => {
-    //       startButton.style.display = 'block'
-    //       loadingValue.parentNode.removeChild(loadingValue)
-    //       this.goToCameraView('frontView', 'exterior')
-    //     })
-    //   this.tweenGroup.add(this.tween)
-    //   window.scroll(0, 0)
-    // }
-    // this.environmentLoader = new EXRLoader(this.loadingManager).load(
-    //   'models/studio.exr',
-    //   (environmentMap) => {
-    //     // environmentMap.mapping = THREE.EquirectangularReflectionMapping
-    //     // this.scene.background = environmentMap
-    //     // this.scene.environment = environmentMap
-    //   },
-    // )
-  }
   loadAudios() {
     this.listener = new THREE.AudioListener()
     this.camera.add(this.listener)
     this.sound = new THREE.Audio(this.listener)
-    this.audioLoader = new THREE.AudioLoader()
+    this.audioLoader = new THREE.AudioLoader(this.loadingManager)
     this.audioLoader.load('audio/porsche_updated.mp3', (buffer) => {
       this.sound.setBuffer(buffer)
     })
@@ -205,6 +173,37 @@ class Canvas {
 
     const startButton = document.getElementById('start-button')
     const loadingValue = document.getElementById('loading-value')
+
+    this.textures = {}
+    const assetPaths = [
+      '/assets/about/porsche/porsche-bg.jpg',
+      '/assets/about/porsche/porsche-1.jpg',
+      '/assets/about/porsche/porsche-2.jpg',
+      '/assets/about/porsche/porsche-3.jpg',
+      '/assets/about/porsche/porsche-4.jpg',
+      '/assets/about/power/power-bg.jpg',
+      '/assets/about/power/engine.avif',
+      '/assets/about/power/aerobar.avif',
+      '/assets/about/power/brake.avif',
+      '/assets/about/percision/percision-bg.jpg',
+      '/assets/about/percision/percision-1.webp',
+      '/assets/about/percision/percision-2.webp',
+      '/assets/about/percision/percision-3.webp',
+      '/assets/about/passion/passion-bg.jfif',
+      '/assets/about/passion/passion-1.jfif',
+      '/assets/about/passion/passion-2.jfif',
+      '/assets/about/passion/passion-3.jfif',
+    ]
+
+    this.textureLoader = new THREE.TextureLoader(this.loadingManager)
+
+    // Load each asset and store the texture in the textures object
+    assetPaths.forEach((path) => {
+      // Extract the file name (without the path) to use as the key
+      const fileName = path.split('/').pop()
+      // Load the texture and store it in the textures object
+      this.textures[fileName] = this.textureLoader.load(path)
+    })
     this.loadingManager.onLoad = () => {
       const progress = { value: 0 }
 
@@ -445,12 +444,6 @@ class Canvas {
         this.updateSettings()
       })
     }
-    // if (this.controls2) {
-    //   this.controls2.addEventListener('change', () => {
-    //     this.updateSettings()
-    //   })
-    // }
-
     this.gui = new dat.GUI()
 
     // Camera position controls
@@ -482,22 +475,22 @@ class Canvas {
       .add(this.settings, 'cameraRotX', -10, 10, 0.01)
       .listen()
       .onChange((value) => {
-        this.camera2.rotation.x = parseFloat(value.toFixed(2))
-        this.settings.cameraRotX = this.camera2.rotation.x.toFixed(2)
+        this.camera.rotation.x = parseFloat(value.toFixed(2))
+        this.settings.cameraRotX = this.camera.rotation.x.toFixed(2)
       })
     cameraFolder
       .add(this.settings, 'cameraRotY', -10, 10, 0.01)
       .listen()
       .onChange((value) => {
-        this.camera2.rotation.y = parseFloat(value.toFixed(2))
-        this.settings.cameraRotY = this.camera2.rotation.y.toFixed(2)
+        this.camera.rotation.y = parseFloat(value.toFixed(2))
+        this.settings.cameraRotY = this.camera.rotation.y.toFixed(2)
       })
     cameraFolder
       .add(this.settings, 'cameraRotZ', -10, 10, 0.01)
       .listen()
       .onChange((value) => {
-        this.camera2.rotation.z = parseFloat(value.toFixed(2))
-        this.settings.cameraRotZ = this.camera2.rotation.z.toFixed(2)
+        this.camera.rotation.z = parseFloat(value.toFixed(2))
+        this.settings.cameraRotZ = this.camera.rotation.z.toFixed(2)
       })
     cameraFolder
       .add(
@@ -695,10 +688,6 @@ class Canvas {
     // const deltaTime = this.elapsedTime - this.previousTime
     // this.previousTime = this.elapsedTime
     this.controls.update()
-    // if (this.controls2) {
-    //   this.controls2.update()
-    // }
-    // this.updateSettings()
 
     if (this.tweenGroup) {
       this.tweenGroup.update()
