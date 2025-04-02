@@ -228,16 +228,6 @@ onMounted(() => {
       visibility: visible;
       transform: translateY(0);
     }
-    .headlines {
-      .headline {
-        &:nth-child(even) {
-          transform: translateX(0);
-        }
-        &:nth-child(odd) {
-          transform: translateX(0);
-        }
-      }
-    }
   }
   #start {
     position: absolute;
@@ -288,6 +278,8 @@ onMounted(() => {
     font-weight: bold;
     opacity: 1;
     transition: opacity 0.5s ease, visibility 0.5s ease-out;
+    font-family: var(--ff-primary);
+    text-shadow: 1px 17px 1px var(--font-color);
   }
   .headlines {
     position: absolute;
