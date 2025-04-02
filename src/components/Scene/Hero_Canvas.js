@@ -203,23 +203,24 @@ class Canvas {
 
     this.textures = {}
     const assetPaths = [
-      '/assets/about/porsche/porsche-bg.jpg',
-      '/assets/about/porsche/porsche-1.jpg',
-      '/assets/about/porsche/porsche-2.jpg',
-      '/assets/about/porsche/porsche-3.jpg',
-      '/assets/about/porsche/porsche-4.jpg',
-      '/assets/about/power/power-bg.jpg',
+      '/assets/intro/intro.mp4',
+      '/assets/about/porsche/porsche-bg.webp',
+      '/assets/about/porsche/porsche-1.webp',
+      '/assets/about/porsche/porsche-2.webp',
+      '/assets/about/porsche/porsche-3.webp',
+      '/assets/about/porsche/porsche-4.webp',
+      '/assets/about/power/power-bg.webp',
       '/assets/about/power/engine.avif',
       '/assets/about/power/aerobar.avif',
       '/assets/about/power/brake.avif',
-      '/assets/about/percision/percision-bg.jpg',
+      '/assets/about/percision/percision-bg.webp',
       '/assets/about/percision/percision-1.webp',
       '/assets/about/percision/percision-2.webp',
       '/assets/about/percision/percision-3.webp',
-      '/assets/about/passion/passion-bg.jfif',
-      '/assets/about/passion/passion-1.jfif',
-      '/assets/about/passion/passion-2.jfif',
-      '/assets/about/passion/passion-3.jfif',
+      '/assets/about/passion/passion-bg.webp',
+      '/assets/about/passion/passion-1.webp',
+      '/assets/about/passion/passion-2.webp',
+      '/assets/about/passion/passion-3.webp',
     ]
 
     this.textureLoader = new THREE.TextureLoader(this.loadingManager)
