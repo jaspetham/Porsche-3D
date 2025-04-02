@@ -202,7 +202,7 @@ onMounted(() => {
 }
 
 .intro-img {
-  background-image: url("/assets/intro/intro.png");
+  background-image: url("/assets/intro/intro.webp");
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;

@@ -2,18 +2,18 @@
   "Porsche": {
     "title": "Porsche",
     "description": "Porsche is a legendary German automaker renowned for its precision engineering, iconic design, and motorsport heritage. Known for producing high-performance sports cars, the brand embodies a perfect blend of luxury and speed. The Porsche crest symbolizes innovation, passion, and a commitment to excellence, making it a benchmark in the automotive world.",
-    "backgroundImage": "/assets/about/porsche/porsche-bg.jpg",
+    "backgroundImage": "/assets/about/porsche/porsche-bg.webp",
     "images": [
-      "/assets/about/porsche/porsche-1.jpg",
-      "/assets/about/porsche/porsche-2.jpg",
-      "/assets/about/porsche/porsche-3.jpg",
-      "/assets/about/porsche/porsche-4.jpg"
+      "/assets/about/porsche/porsche-1.webp",
+      "/assets/about/porsche/porsche-2.webp",
+      "/assets/about/porsche/porsche-3.webp",
+      "/assets/about/porsche/porsche-4.webp"
     ]
   },
   "Power": {
     "title": "Power",
     "description": "The Porsche GT3 RS is a testament to raw power and engineering mastery. Equipped with a naturally aspirated 4.0-liter flat-six engine, it delivers an exhilarating 518 horsepower, enabling breathtaking acceleration and top-tier performance. This power is harnessed with precision, offering an unmatched driving experience on both the track and the road.",
-    "backgroundImage": "/assets/about/power/power-bg.jpg",
+    "backgroundImage": "/assets/about/power/power-bg.webp",
     "images": [
       "/assets/about/power/engine.avif",
       "/assets/about/power/aerobar.avif",
@@ -23,7 +23,7 @@
   "Percision": {
     "title": "Precision",
     "description": "The Porsche GT3 RS exemplifies precision in every detail, from its aerodynamically optimized body to its race-inspired suspension. Every component is meticulously engineered to enhance performance, handling, and driver feedback. This relentless pursuit of precision ensures that the GT3 RS delivers unparalleled control and confidence at high speeds.",
-    "backgroundImage": "/assets/about/percision/percision-bg.jpg",
+    "backgroundImage": "/assets/about/percision/percision-bg.webp",
     "images": [
       "/assets/about/percision/percision-1.webp",
       "/assets/about/percision/percision-2.webp",
