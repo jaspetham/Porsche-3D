@@ -13,21 +13,52 @@ const startAnimation = () => {
 };
 
 const applyTextEffect = () => {
-  const headlines = document.querySelectorAll(".headline span");
+  const headlines = document.querySelectorAll(".headline");
 
-  headlines.forEach((char, index) => {
-    // Initial state: hidden
-    gsap.set(char, { opacity: 0, y: 20 }); // Start slightly below with opacity 0
+  headlines.forEach((headline, headlineIndex) => {
+    const chars = headline.querySelectorAll("span");
 
-    // Create a timeline for each character
-    const tl = gsap.timeline({ delay: index * 0.1 }); // Stagger the animations by 0.1s
+    // Initial state for the headline (container)
+    gsap.set(headline, { opacity: 0 }); // Just fade in, no width animation
 
-    // Typewriter effect: fade in with a slight bounce
-    tl.to(char, {
+    // Initial state for each character
+    chars.forEach((char) => {
+      gsap.set(char, { x: -100, opacity: 0 }); // Start off-screen to the left
+    });
+
+    // Create a timeline for the headline
+    const tl = gsap.timeline({ delay: headlineIndex * 0.2 }); // Stagger headlines by 0.2s
+
+    // Fade in the headline (container)
+    tl.to(headline, {
       opacity: 1, // Fade in
-      y: 0, // Move to original position
-      duration: 0.3, // Duration of the fade-in and bounce
-      ease: "back.out(1.7)", // Back easing for a slight overshoot (bounce effect)
+      duration: 0.7, // Duration of the fade-in
+      ease: "power2.out",
+    });
+
+    // Animate each character
+    chars.forEach((char, charIndex) => {
+      const charTl = gsap.timeline({ delay: charIndex * 0.2 }); // Stagger characters by 0.05s
+      charTl.to(char, {
+        x: 0, // Slide to original position
+        opacity: 1, // Fade in
+        duration: 1.2, // Duration of the slide
+        ease: "power3.out",
+      });
+    });
+  });
+};
+
+const headlinesColor = (isHover: boolean) => {
+  const headlines = document.querySelectorAll(".headline");
+  headlines.forEach((headline) => {
+    const chars = headline.querySelectorAll("span");
+    chars.forEach((char, index) => {
+      gsap.to(char, {
+        color: isHover ? "var(--font-color)" : "white",
+        duration: 0.5,
+        delay: index * 0.05,
+      });
     });
   });
 };
@@ -40,7 +71,7 @@ onMounted(() => {
       if (loadingDetails.classList.contains("loaded")) {
         setTimeout(() => {
           isLoaded.value = true; // Update the state
-          // applyTextEffect(); // Trigger the text effect
+          applyTextEffect(); // Trigger the text effect
           observer.disconnect(); // Stop observing once the class is detected
         }, 1000);
       }
@@ -53,6 +84,11 @@ onMounted(() => {
 </script>
 <template>
   <div id="loading-text-intro">
+    <div
+      class="intro-img"
+      :style="{ opacity: isLoaded ? 0 : 1, transition: 'opacity 1.5s ease-out' }"
+      v-if="!isLoaded || isLoaded"
+    ></div>
     <video autoplay muted loop playsinline id="background-video">
       <source src="/assets/intro/intro.mp4" type="video/mp4" />
       Your browser does not support the video tag.
@@ -95,7 +131,12 @@ onMounted(() => {
         </p>
       </div>
       <div id="start">
-        <button @click="startAnimation" class="uppercase">
+        <button
+          @mouseover="headlinesColor(true)"
+          @mouseleave="headlinesColor(false)"
+          @click="startAnimation"
+          class="uppercase"
+        >
           <span>Enter</span>
           <div class="icon">
             <svg
@@ -160,6 +201,16 @@ onMounted(() => {
   z-index: -1;
 }
 
+.intro-img {
+  background-image: url("/assets/intro/intro.png");
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  width: 100%;
+  height: 100%;
+  position: absolute;
+}
+
 .loading-details {
   position: relative;
   z-index: 1;
@@ -202,13 +253,17 @@ onMounted(() => {
       color: var(--dark-color);
       font-weight: bold;
       font-size: var(--fs-350);
-      padding: 0.75rem 1rem;
+      padding: 0.75rem 2rem;
       gap: 2rem;
       border-top-right-radius: 20px;
       border-bottom-left-radius: 20px;
       border-bottom-right-radius: 20px;
       justify-content: space-between;
       align-items: center;
+      &:hover {
+        background: white;
+        color: var(--font-color);
+      }
     }
     .icon {
       position: relative;
@@ -217,6 +272,10 @@ onMounted(() => {
     }
     &:hover .icon {
       right: -0.75rem;
+      border-radius: 50%;
+      path {
+        fill: var(--font-color);
+      }
     }
   }
   #loading-value {
@@ -234,6 +293,7 @@ onMounted(() => {
     position: absolute;
     top: 2.5%;
     left: 2.5%;
+    width: fit-content;
     z-index: 1;
     display: flex;
     flex-direction: column;
@@ -241,16 +301,15 @@ onMounted(() => {
     text-transform: uppercase;
     .headline {
       position: relative;
-      font-size: clamp(40px, 15dvw + 70px, 190px);
+      font-size: clamp(40px, 8dvw + 40px, 160px);
       font-weight: bold;
       transition: all 0.8s ease-out;
+      opacity: 0;
       &:nth-child(even) {
         text-align: right;
-        transform: translateX(100dvw);
       }
       &:nth-child(odd) {
         text-align: left;
-        transform: translateX(-100dvw);
       }
     }
   }
