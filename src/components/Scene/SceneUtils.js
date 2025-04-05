@@ -238,7 +238,7 @@ export const debugController = (canvas) => {
   cameraFolder
     .add(
       {
-        rotateAroundView: () => rotateAroundView(),
+        rotateAroundView: () => rotateAroundView(canvas),
       },
       'rotateAroundView',
     )
