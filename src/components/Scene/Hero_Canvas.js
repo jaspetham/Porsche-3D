@@ -1,67 +1,36 @@
 import * as THREE from 'three'
-import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js'
-import { Tween, Easing, Group } from 'three/examples/jsm/libs/tween.module.js'
-import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader'
-import { DRACOLoader } from 'three/examples/jsm/loaders/DRACOLoader.js'
 import * as dat from 'lil-gui'
+import { Tween, Easing, Group } from 'three/examples/jsm/libs/tween.module.js'
+import sceneUtils from './SceneUtils'
 import gsap from 'gsap'
-class Canvas {
+class HeroCanvas {
   constructor(options) {
     this.scene = new THREE.Scene()
     this.container = options.dom
     this.width = this.container.offsetWidth
     this.height = this.container.offsetHeight
     this.renderer = new THREE.WebGLRenderer({ antialias: true })
+    this.renderer.outputEncoding = THREE.sRGBEncoding
     this.renderer.setPixelRatio(window.devicePixelRatio)
     this.renderer.setSize(this.width, this.height)
     this.renderer.setClearColor(0xececec, 1)
-    this.renderer.shadowMap.enabled = true
-    this.renderer.shadowMap.type = THREE.PCFSoftShadowMap
+    this.renderer.outputEncoding = THREE.sRGBEncoding
     this.container.appendChild(this.renderer.domElement)
 
-    this.cameraController()
-
-    // build type
-    this.materialType = {
-      interior: {
-        metalness: 0.5,
-        roughness: 0.5,
-        envMapIntensity: 2,
-      },
-      exterior: {
-        metalness: 0.5,
-        roughness: 0.3,
-        envMapIntensity: 0.8,
-      },
-    }
-
-    // car position
-    this.porschDefaultValue = {
-      position: {
-        x: 0,
-        y: -0.6,
-        z: 0.5,
-      },
-      rotation: {
-        x: 0,
-        y: 270 * (Math.PI / 180),
-        z: 0,
-      },
-    }
-    this.porsche = null
     this.time = new THREE.Clock()
     this.elapsedTime = 0
     this.previousTime = 0
     this.tweenGroup = new Group()
-    this.isPlaying = true
     this.initialCameraZ = 0
+
+    sceneUtils.cameraController(this)
     this.loadAssets()
     this.loadAudios()
-    this.addObjects()
-    this.addLights()
-    this.resize()
+    sceneUtils.addObjects(this)
+    sceneUtils.addLights(this)
+    sceneUtils.setupResize(this)
+    sceneUtils.resize(this)
     this.render()
-    this.setupResize()
     // this.settings()
   }
 
@@ -78,73 +47,9 @@ class Canvas {
       })
     }
   }
-
-  cameraController() {
-    // camera view
-    this.cameraView = {
-      driverView: {
-        position: { x: 0.2, y: 0.3, z: 1.2 },
-        rotation: { x: -1.55, y: 1.17, z: 1.55 },
-      },
-      sideView: {
-        position: { x: 0.05, y: 0.15, z: 3 },
-        rotation: { x: -0.04, y: -0.04, z: 0 },
-      },
-      frontView: {
-        position: {
-          x: -3.2,
-          y: 0.45,
-          z: 1.15,
-        },
-        rotation: {
-          x: -0.82,
-          y: -1.26,
-          z: -0.82,
-        },
-      },
-      backView: {
-        position: {
-          x: 3.3,
-          y: 0.3,
-          z: 0.65,
-        },
-        rotation: {
-          x: -0.82,
-          y: -1.26,
-          z: -0.82,
-        },
-      },
-      topView: {
-        position: {
-          x: 0.75,
-          y: 4.25,
-          z: 0.02,
-        },
-        rotation: {
-          x: -0.82,
-          y: -1.26,
-          z: -0.82,
-        },
-      },
-    }
-
-    this.cameraGroup1 = new THREE.Group()
-    this.camera = new THREE.PerspectiveCamera(
-      70,
-      window.innerWidth / window.innerHeight,
-      0.001,
-      1000,
-    )
-    this.scene.add(this.cameraGroup1)
-
-    this.controls = new OrbitControls(this.camera, this.renderer.domElement)
-    this.controls.enableDamping = true
-    this.controls.maxPolarAngle = Math.PI / 2
-  }
   clearScene() {
     this.renderer.renderLists.dispose()
   }
-
   introAnimation() {
     this.introTween = new Tween.Tween(this.camera.position.set(0, 4, 2.7))
       .to({ x: 0, y: 2.4, z: 8.8 }, 3500)
@@ -166,13 +71,13 @@ class Canvas {
   }
   loadAssets() {
     this.loadingManager = new THREE.LoadingManager()
-
     const loadingValue = document.getElementById('loading-value')
     const loadingWrapper = document.getElementById('loading-wrapper')
-
     this.loadingManager.onStart = () => {
       loadingValue.innerHTML = '0%'
     }
+    sceneUtils.loadHDR(this)
+    sceneUtils.loadModels(this)
     let maxProgress = 0
     this.loadingManager.onProgress = (url, itemsLoaded, itemsTotal) => {
       // const progress = (itemsLoaded / itemsTotal) * 100
@@ -191,16 +96,9 @@ class Canvas {
       // Hide loading value and show start button
       loadingWrapper.classList.add('loaded')
       // Proceed to camera view
-      this.goToCameraView('frontView', 'exterior')
+      sceneUtils.goToCameraView(this, 'frontView', 'exterior')
       window.scroll(0, 0)
     }
-
-    this.dracoLoader = new DRACOLoader()
-    this.dracoLoader.setDecoderPath('/draco/')
-    this.dracoLoader.setDecoderConfig({ type: 'js' })
-    this.gltfLoader = new GLTFLoader(this.loadingManager)
-    this.gltfLoader.setDRACOLoader(this.dracoLoader)
-
     this.textures = {}
     const assetPaths = [
       '/assets/intro/intro.mp4',
@@ -229,142 +127,8 @@ class Canvas {
       const fileName = path.split('/').pop()
       this.textures[fileName] = this.textureLoader.load(path)
     })
-
-    this.gltfLoader.load('/models/porsche.glb', (gltf) => {
-      this.porsche = gltf.scene
-      this.porsche.traverse((child) => {
-        child.castShadow = true
-        child.receiveShadow = true
-        if (child.material) {
-          if (!child.material.envMap) {
-            child.material.envMap = this.scene.environment
-            child.material.metalness = this.materialType.exterior.metalness
-            child.material.roughness = this.materialType.exterior.roughness
-            child.material.envMapIntensity = this.materialType.exterior.envMapIntensity
-            child.material.needsUpdate = true
-          }
-        }
-      })
-      this.porsche.position.set(
-        this.porschDefaultValue.position.x,
-        this.porschDefaultValue.position.y,
-        this.porschDefaultValue.position.z,
-      )
-      this.porsche.rotation.y = 270 * (Math.PI / 180)
-      this.scene.add(this.porsche)
-    })
   }
 
-  goToCameraView(viewScene, materialType) {
-    let targetPosition, targetRotation
-    const transSec = 1.5
-    const easeType = 'expo.inOut'
-
-    switch (viewScene) {
-      case 'driverView': {
-        targetPosition = {
-          x: this.cameraView.driverView.position.x,
-          y: this.cameraView.driverView.position.y,
-          z: this.cameraView.driverView.position.z,
-        }
-        targetRotation = {
-          x: this.cameraView.driverView.rotation.x,
-          y: this.cameraView.driverView.rotation.y,
-          z: this.cameraView.driverView.rotation.z,
-        }
-        break
-      }
-      case 'sideView': {
-        targetPosition = {
-          x: this.cameraView.sideView.position.x,
-          y: this.cameraView.sideView.position.y,
-          z: this.cameraView.sideView.position.z,
-        }
-        targetRotation = {
-          x: this.cameraView.sideView.rotation.x,
-          y: this.cameraView.sideView.rotation.y,
-          z: this.cameraView.sideView.rotation.z,
-        }
-        break
-      }
-      case 'frontView': {
-        targetPosition = {
-          x: this.cameraView.frontView.position.x,
-          y: this.cameraView.frontView.position.y,
-          z: this.cameraView.frontView.position.z,
-        }
-        targetRotation = {
-          x: this.cameraView.frontView.rotation.x,
-          y: this.cameraView.frontView.rotation.y,
-          z: this.cameraView.frontView.rotation.z,
-        }
-        break
-      }
-      case 'backView': {
-        targetPosition = {
-          x: this.cameraView.backView.position.x,
-          y: this.cameraView.backView.position.y,
-          z: this.cameraView.backView.position.z,
-        }
-        targetRotation = {
-          x: this.cameraView.backView.rotation.x,
-          y: this.cameraView.backView.rotation.y,
-          z: this.cameraView.backView.rotation.z,
-        }
-        break
-      }
-      case 'topView': {
-        targetPosition = {
-          x: this.cameraView.topView.position.x,
-          y: this.cameraView.topView.position.y,
-          z: this.cameraView.topView.position.z,
-        }
-        targetRotation = {
-          x: this.cameraView.topView.rotation.x,
-          y: this.cameraView.topView.rotation.y,
-          z: this.cameraView.topView.rotation.z,
-        }
-        break
-      }
-    }
-    const animation = gsap.to(this.camera.position, {
-      duration: transSec,
-      ease: easeType,
-      x: targetPosition.x,
-      y: targetPosition.y,
-      z: targetPosition.z,
-      onUpdate: () => {
-        this.camera.position.set(
-          this.camera.position.x,
-          this.camera.position.y,
-          this.camera.position.z,
-        )
-        if (animation.progress() > 0.5) {
-          this.updateMaterialProperties(this.materialType[materialType].metalness, 'metalness')
-          this.updateMaterialProperties(this.materialType[materialType].roughness, 'roughness')
-          this.updateMaterialProperties(
-            this.materialType[materialType].envMapIntensity,
-            'envMapIntensity',
-          )
-        }
-      },
-    })
-
-    gsap.to(this.camera.rotation, {
-      duration: transSec,
-      ease: easeType,
-      x: targetRotation.x,
-      y: targetRotation.y,
-      z: targetRotation.z,
-      onUpdate: () => {
-        this.camera.rotation.set(
-          this.camera.rotation.x,
-          this.camera.rotation.y,
-          this.camera.rotation.z,
-        )
-      },
-    })
-  }
   startAudio() {
     if (!this.sound.isPlaying) {
       this.sound.play()
@@ -384,7 +148,7 @@ class Canvas {
         })
         .onComplete(function () {
           loadingCover.parentNode.removeChild(loadingCover)
-          that.goToCameraView('frontView', 'exterior')
+          sceneUtils.goToCameraView(that, 'frontView', 'exterior')
           that.rotateAroundView()
           headerContainer.classList.add('show')
           mainContainer.classList.add('show')
@@ -627,43 +391,17 @@ class Canvas {
     })
   }
 
-  setupResize() {
-    window.addEventListener('resize', this.resize.bind(this))
-  }
-
-  resize() {
-    this.width = this.container.offsetWidth
-    this.height = this.container.offsetHeight
-    this.renderer.setSize(this.width, this.height)
-    this.camera.aspect = this.width / this.height
-    this.camera.updateProjectionMatrix()
-  }
-
-  addLights() {
-    const ambientLight = new THREE.AmbientLight(0xffffff, 2) // Low-intensity ambient light
-    this.directionalLight = new THREE.DirectionalLight(0xffffff, 5)
-    this.directionalLight.position.set(-0.16, 20, 12)
-    this.directionalLight.castShadow = true
-    this.directionalLight.shadow.mapSize.width = 1024
-    this.directionalLight.shadow.mapSize.height = 1024
-    this.directionalLight.shadow.bias = -0.001
-    this.scene.add(ambientLight)
-    this.scene.add(this.directionalLight)
-  }
-
   addObjects() {
     this.material = new THREE.MeshStandardMaterial({
-      roughness: 1,
-      metalness: 0.2,
-      envMapIntensity: 0,
-      color: 0xf9f9f9,
+      roughness: 0.2,
+      metalness: 0.8,
+      transparent: true,
+      opacity: 0.01,
     })
 
     this.geometry = new THREE.PlaneGeometry(100, 100, 1)
     this.plane = new THREE.Mesh(this.geometry, this.material)
     this.plane.rotation.x = -Math.PI / 2
-    this.plane.frustumCulled = true
-    this.plane.receiveShadow = true
     this.plane.position.y = -0.7
     this.plane.position.z = -3
     this.scene.add(this.plane)
@@ -678,19 +416,7 @@ class Canvas {
     this.settings.cameraRotZ = this.camera.rotation.z.toFixed(2)
   }
 
-  stop() {
-    this.isPlaying = false
-  }
-
-  play() {
-    if (!this.isPlaying) {
-      this.render()
-      this.isPlaying = true
-    }
-  }
-
   render() {
-    if (!this.isPlaying) return
     this.elapsedTime = this.time.getElapsedTime()
     // const deltaTime = this.elapsedTime - this.previousTime
     // this.previousTime = this.elapsedTime
@@ -704,4 +430,4 @@ class Canvas {
   }
 }
 
-export default Canvas
+export default HeroCanvas
