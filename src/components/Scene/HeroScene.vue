@@ -1,24 +1,24 @@
 <script lang="ts" setup>
-import Canvas from './Hero_Canvas'
-import { onMounted, watch } from 'vue'
-import { useCanvasStore } from '@/stores/CanvasInstance'
-import { useScrollEvent } from '@/composables/useScrollEvent'
+import Canvas from "./Hero_Canvas";
+import { onMounted, watch } from "vue";
+import { useCanvasStore } from "@/stores/CanvasInstance";
+import { useScrollEvent } from "@/composables/useScrollEvent";
 
-const canvasStore = useCanvasStore()
-const { scrollAmount } = useScrollEvent()
+const canvasStore = useCanvasStore();
+const { scrollAmount } = useScrollEvent();
 
 onMounted(() => {
   const canvasInstance = new Canvas({
-    dom: document.getElementById('container'),
-  })
-  canvasStore.setCanvasInstance(canvasInstance)
+    dom: document.getElementById("container"),
+  });
+  canvasStore.setCanvasInstance(canvasInstance);
   watch(scrollAmount, (newScrollValue) => {
-    const maxScroll = 1200
+    const maxScroll = 1200;
     if (canvasStore.canvasInstance && newScrollValue < maxScroll) {
-      canvasStore.canvasInstance.onScrollEvents(newScrollValue, maxScroll)
+      canvasStore.canvasInstance.onScrollEvents(newScrollValue, maxScroll);
     }
-  })
-})
+  });
+});
 </script>
 
 <template>
@@ -46,7 +46,7 @@ onMounted(() => {
     top: 0;
     width: 100%;
     height: 100%;
-    background: linear-gradient(0deg, rgba(0, 0, 0, 0.6) 5%, rgba(255, 255, 255, 0) 100%);
+    background: linear-gradient(0deg, rgba(0, 0, 0, 0.4) 5%, rgba(255, 255, 255, 0) 100%);
   }
 }
 </style>
