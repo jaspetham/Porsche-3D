@@ -109,7 +109,7 @@ class HeroCanvas {
         .onComplete(function () {
           loadingCover.parentNode.removeChild(loadingCover)
           sceneUtils.goToCameraView(that, 'frontView', 'exterior')
-          sceneUtils.rotateAroundView()
+          sceneUtils.rotateAroundView(that)
           headerContainer.classList.add('show')
           mainContainer.classList.add('show')
           setTimeout(() => {
