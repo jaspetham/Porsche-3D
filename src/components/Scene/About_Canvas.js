@@ -4,7 +4,7 @@ class AboutCanvas {
   constructor(options) {
     sceneUtils.initializeScene(this, options)
     sceneUtils.cameraController(this, false)
-    this.radius = 3.25
+    this.radius = 3
     this.speed = 0.04
     sceneUtils.loadHDR(this)
     sceneUtils.loadModels(this)
@@ -13,7 +13,6 @@ class AboutCanvas {
     sceneUtils.setupResize(this)
     sceneUtils.resize(this)
 
-    this.listProperties()
     this.render()
   }
 
