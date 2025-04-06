@@ -205,85 +205,85 @@ h6 {
 }
 
 h1 {
-  font-size: var(--fs-700);
+  font-size: var(--fs-700) !important;
 }
 
 h2 {
-  font-size: var(--fs-600);
+  font-size: var(--fs-600) !important;
 }
 
 h3 {
-  font-size: var(--fs-500);
+  font-size: var(--fs-500) !important;
 }
 
 h4 {
-  font-size: var(--fs-400);
+  font-size: var(--fs-400) !important;
 }
 
 h5 {
-  font-size: var(--fs-300);
+  font-size: var(--fs-300) !important;
 }
 
 h6 {
-  font-size: var(--fs-200);
+  font-size: var(--fs-200) !important;
 }
 
 .fs-100 {
-  font-size: var(--fs-100);
+  font-size: var(--fs-100) !important;
 }
 .fs-150 {
-  font-size: var(--fs-150);
+  font-size: var(--fs-150) !important;
 }
 .fs-200 {
-  font-size: var(--fs-200);
+  font-size: var(--fs-200) !important;
 }
 .fs-250 {
-  font-size: var(--fs-250);
+  font-size: var(--fs-250) !important;
 }
 .fs-300 {
-  font-size: var(--fs-300);
+  font-size: var(--fs-300) !important;
 }
 .fs-350 {
-  font-size: var(--fs-350);
+  font-size: var(--fs-350) !important;
 }
 .fs-400 {
-  font-size: var(--fs-400);
+  font-size: var(--fs-400) !important;
 }
 .fs-450 {
-  font-size: var(--fs-450);
+  font-size: var(--fs-450) !important;
 }
 .fs-500 {
-  font-size: var(--fs-500);
+  font-size: var(--fs-500) !important;
 }
 .fs-550 {
-  font-size: var(--fs-550);
+  font-size: var(--fs-550) !important;
 }
 .fs-600 {
-  font-size: var(--fs-600);
+  font-size: var(--fs-600) !important;
 }
 .fs-650 {
-  font-size: var(--fs-650);
+  font-size: var(--fs-650) !important;
 }
 .fs-700 {
-  font-size: var(--fs-700);
+  font-size: var(--fs-700) !important;
 }
 .fs-750 {
-  font-size: var(--fs-750);
+  font-size: var(--fs-750) !important;
 }
 .fs-800 {
-  font-size: var(--fs-800);
+  font-size: var(--fs-800) !important;
 }
 .fs-850 {
-  font-size: var(--fs-850);
+  font-size: var(--fs-850) !important;
 }
 .fs-900 {
-  font-size: var(--fs-900);
+  font-size: var(--fs-900) !important;
 }
 .fs-950 {
-  font-size: var(--fs-950);
+  font-size: var(--fs-950) !important;
 }
 .fs-1000 {
-  font-size: var(--fs-1000);
+  font-size: var(--fs-1000) !important;
 }
 .clr-white {
   color: var(--white-color);
@@ -370,4 +370,10 @@ h6 {
   background: var(--light-color);
   border-top-left-radius: 5rem;
   border-top-right-radius: 5rem;
+}
+
+.div-hide {
+  z-index: 1;
+  position: relative;
+  overflow: hidden;
 }

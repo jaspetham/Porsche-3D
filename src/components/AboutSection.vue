@@ -15,7 +15,6 @@ const viewDetails = (data: aboutDataInterface) => {
 const handleClose = () => {
   aboutDataState.value = null;
 };
-
 watch(aboutDataState, (newValue) => {
   document.body.style.overflowY = newValue != null ? "hidden" : "auto";
 });
@@ -27,14 +26,14 @@ watch(aboutDataState, (newValue) => {
     <div class="details w-full">
       <div class="p-5 px-10">
         <div
-          class="cursor-pointer"
+          class="cursor-pointer detail"
           @click="viewDetails(aboutData[detailsInfoEnum.porsche])"
           data-aos="fade-right"
         >
           Porsche
         </div>
         <div
-          class="cursor-pointer"
+          class="cursor-pointer detail"
           @click="viewDetails(aboutData[detailsInfoEnum.power])"
           data-aos="fade-right"
           data-aos-delay="50"
@@ -43,7 +42,7 @@ watch(aboutDataState, (newValue) => {
         </div>
         <!-- https://www.elferspot.com/en/magazin/porsche-active-aerodynamics-paa/ -->
         <div
-          class="cursor-pointer"
+          class="cursor-pointer detail"
           @click="viewDetails(aboutData[detailsInfoEnum.percision])"
           data-aos="fade-right"
           data-aos-delay="100"
@@ -52,7 +51,7 @@ watch(aboutDataState, (newValue) => {
         </div>
         <!-- https://www.porsche.com/international/accessoriesandservice/exclusive-manufaktur/ -->
         <div
-          class="cursor-pointer"
+          class="cursor-pointer detail"
           @click="viewDetails(aboutData[detailsInfoEnum.passions])"
           data-aos="fade-right"
           data-aos-delay="150"
@@ -73,7 +72,7 @@ watch(aboutDataState, (newValue) => {
 
 <style lang="scss">
 .about-overlay {
-  background-color: rgba(54, 69, 79, 0.25);
+  background-color: rgba(0, 0, 0, 0.3);
   position: absolute;
   left: 0;
   top: 0;
@@ -102,6 +101,15 @@ watch(aboutDataState, (newValue) => {
     text-transform: uppercase;
     color: var(--light-color);
     text-shadow: 8px 10px 10px rgba(54, 69, 79, 0.45);
+    .detail {
+      position: relative;
+      transition: all 0.3s ease;
+      &:hover {
+        transform: scale(1.1);
+        color: var(--font-color);
+        text-shadow: 4px 4px 10px white;
+      }
+    }
   }
 }
 

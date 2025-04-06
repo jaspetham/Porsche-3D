@@ -2,6 +2,7 @@
 import type { aboutDataInterface } from "@/type";
 import { onMounted, onUnmounted, ref, nextTick } from "vue";
 import { gsap } from "gsap";
+import CustomButton from "./CustomButton.vue";
 
 const props = defineProps<{
   data: aboutDataInterface;
@@ -144,9 +145,7 @@ const pageCloseAnimation = (onComplete: () => void) => {
       .call(onComplete, undefined, "-=0.4")
       .fromTo(
         closeButton,
-        {
-          width: "80", // Start with opacity 0
-        },
+        {},
         {
           width: 0, // Fade-in faster
           duration: 1.5, // Shorter duration for opacity
@@ -196,7 +195,12 @@ onUnmounted(() => {
               {{ char }}
             </span>
           </p>
-          <button @click="closeDetail" class="detail-close fs-100">Close</button>
+          <CustomButton
+            class="detail-close fs-200"
+            @click="closeDetail"
+            text="Close"
+            themeColor="var(--font-color)"
+          />
         </div>
         <div class="context-detail flow mt-20 w-5/6 mx-auto">
           <div class="detail-img-slide mx-auto w-2/4">
@@ -235,13 +239,6 @@ onUnmounted(() => {
   width: 100%;
   height: 100%;
   transition: transform 0.25s ease;
-}
-
-.detail-close {
-  background: var(--font-color);
-  color: white;
-  padding: 6px 1rem;
-  width: 80px;
 }
 
 .context {
