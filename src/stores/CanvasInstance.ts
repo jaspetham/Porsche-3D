@@ -1,6 +1,6 @@
 import { defineStore } from 'pinia'
 import { shallowRef } from 'vue'
-import Canvas from '@/components/Scene/Hero_Canvas'
+import Canvas from '@/components/Scene/Hero_Canvas.ts'
 
 // Define the store
 export const useCanvasStore = defineStore('canvas', () => {

@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import Canvas from "./About_Canvas";
+import Canvas from "./About_Canvas.ts";
 import { onMounted } from "vue";
 import { useCanvasStore } from "@/stores/CanvasInstance";
 

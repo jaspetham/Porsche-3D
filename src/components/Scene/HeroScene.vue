@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import Canvas from "./Hero_Canvas";
+import Canvas from "./Hero_Canvas.ts";
 import { onMounted, watch } from "vue";
 import { useCanvasStore } from "@/stores/CanvasInstance";
 import { useScrollEvent } from "@/composables/useScrollEvent";
@@ -13,7 +13,7 @@ onMounted(() => {
   });
   canvasStore.setCanvasInstance(canvasInstance);
   watch(scrollAmount, (newScrollValue) => {
-    const maxScroll = 1200;
+    const maxScroll = 5000;
     if (canvasStore.canvasInstance && newScrollValue < maxScroll) {
       canvasStore.canvasInstance.onScrollEvents(newScrollValue, maxScroll);
     }
