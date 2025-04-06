@@ -2,6 +2,7 @@
 import AboutSection from "@/components/AboutSection.vue";
 import HeaderSection from "@/components/HeaderSection.vue";
 import HeroSection from "@/components/HeroSection.vue";
+import MissionSection from "@/components/MissionSection.vue";
 import HeroScene from "@/components/Scene/HeroScene.vue";
 import ScreenLoader from "@/components/ScreenLoader.vue";
 </script>
@@ -15,6 +16,7 @@ import ScreenLoader from "@/components/ScreenLoader.vue";
     <HeroSection />
     <section class="content-wrapper">
       <AboutSection />
+      <MissionSection />
     </section>
   </main>
 </template>

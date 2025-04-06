@@ -6,8 +6,9 @@ import sceneUtils, {
   GLTFLoader,
   OrbitControls,
   GUI,
-  CameraView,
+  CameraViewType,
   MaterialType,
+  defaultValue,
 } from './SceneUtils' // Adjust path as needed
 import { Tween, Easing, Group as TweenGroup } from 'three/examples/jsm/libs/tween.module.js'
 
@@ -34,10 +35,11 @@ class HeroCanvas implements Canvas {
   dracoLoader?: DRACOLoader
   gltfLoader?: GLTFLoader
   loadingManager?: THREE.LoadingManager
+  currentCameraPosition?: THREE.Vector3
+  currentCameraMaterialType?: { cameraViewType: CameraViewType; materialType: MaterialType }
 
   // Custom properties
   private tweenGroup: TweenGroup
-  private initialCameraZ: number
   private introTween?: Tween<THREE.Vector3>
   private tweenCover?: Tween<{ y: number }>
   private listener?: THREE.AudioListener
@@ -50,7 +52,6 @@ class HeroCanvas implements Canvas {
     sceneUtils.initializeScene(this, options)
     sceneUtils.cameraController(this, false)
     this.tweenGroup = new TweenGroup()
-    this.initialCameraZ = 0
 
     this.loadAssets()
     this.loadAudios()
@@ -58,31 +59,37 @@ class HeroCanvas implements Canvas {
     sceneUtils.addLights(this)
     sceneUtils.setupResize(this)
     sceneUtils.resize(this)
+    sceneUtils.debugController(this)
     this.render()
   }
 
   onScrollEvents(scrollAmount: number, maxScroll: number): void {
-    // Uncomment and type if needed
-    // if (!this.porsche) {
-    //   console.warn('Porsche model is not loaded yet.');
-    //   return;
-    // }
-    // const normalizedScroll = Math.min(1, Math.max(0, scrollAmount / maxScroll));
-    // const rotationAngle = normalizedScroll * Math.PI * 2; // Full circle (2π radians)
-    // const radius = 10; // Adjust the radius of the camera's orbit as needed
-    // const cameraX =
-    //   sceneUtils.defaultValue.porschDefaultValue.position.x + radius * Math.sin(rotationAngle);
-    // const cameraZ =
-    //   sceneUtils.defaultValue.porschDefaultValue.position.z + radius * Math.cos(rotationAngle);
-    // gsap.to(this.camera.position, {
-    //   x: cameraX,
-    //   z: cameraZ,
-    //   duration: 0.2,
-    //   ease: 'power1.out',
-    //   onUpdate: () => {
-    //     this.camera.lookAt(this.porsche.position);
-    //   },
-    // });
+    if (!this.porsche || !this.currentCameraPosition) {
+      console.warn('Porsche model is not loaded yet.')
+      return
+    }
+
+    const position = this.currentCameraPosition
+    const strength = 1.5
+    const delta = (scrollAmount / maxScroll) * strength
+    const viewType = this.currentCameraMaterialType?.cameraViewType
+
+    const movementPosMap: Record<CameraViewType | 'default', () => Partial<typeof position>> = {
+      [CameraViewType.FrontView]: () => ({ x: position.x + delta }),
+      [CameraViewType.DriverView]: () => ({ x: position.x - delta }),
+      [CameraViewType.BackView]: () => ({ x: position.x - delta }),
+      [CameraViewType.SideView]: () => ({ z: position.z - delta }),
+      [CameraViewType.TopView]: () => ({ y: position.y - delta }),
+      default: () => ({ z: position.z + delta }),
+    }
+
+    const movementPos = (movementPosMap[viewType!] || movementPosMap.default)()
+
+    gsap.to(this.camera.position, {
+      ...movementPos,
+      duration: 0.2,
+      ease: 'power1.out',
+    })
   }
 
   introAnimation(): void {
@@ -133,8 +140,12 @@ class HeroCanvas implements Canvas {
 
     this.loadingManager.onLoad = () => {
       loadingWrapper.classList.add('loaded')
-      sceneUtils.goToCameraView(this, CameraView.FrontView, MaterialType.Exterior)
-      this.startAudio()
+      sceneUtils.goToCameraView(this, CameraViewType.FrontView, MaterialType.Exterior)
+      this.camera.position.set(
+        defaultValue.cameraView[CameraViewType.FrontView].position.x,
+        defaultValue.cameraView[CameraViewType.FrontView].position.y,
+        defaultValue.cameraView[CameraViewType.FrontView].position.z,
+      )
       window.scroll(0, 0)
     }
 
@@ -170,11 +181,10 @@ class HeroCanvas implements Canvas {
         })
         .onComplete(() => {
           loadingCover.parentNode?.removeChild(loadingCover)
-          sceneUtils.goToCameraView(this, CameraView.SideView, MaterialType.Exterior)
+          sceneUtils.goToCameraView(this, CameraViewType.SideView, MaterialType.Exterior)
           headerContainer.classList.add('show')
           mainContainer.classList.add('show')
           setTimeout(() => {
-            console.log('porsche info', this.porsche)
             document.body.style.overflowY = 'auto'
           }, 5000)
         })
