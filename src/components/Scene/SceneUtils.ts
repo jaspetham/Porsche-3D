@@ -478,7 +478,7 @@ export const goToCameraView = (
   settingsValue.cameraRotY = cameraView[viewType].rotation.y
   settingsValue.cameraRotZ = cameraView[viewType].rotation.z
 
-  debugController(canvas)
+  // debugController(canvas)
 }
 
 export const initializeScene = (canvas: Canvas, options: { dom: HTMLElement }): void => {
