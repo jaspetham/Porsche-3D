@@ -186,7 +186,7 @@ class HeroCanvas implements Canvas {
           mainContainer.classList.add('show')
           setTimeout(() => {
             document.body.style.overflowY = 'auto'
-          }, 5000)
+          }, 2000)
         })
       this.tweenGroup.add(this.tweenCover)
     }
