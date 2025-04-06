@@ -59,7 +59,7 @@ class HeroCanvas implements Canvas {
     sceneUtils.addLights(this)
     sceneUtils.setupResize(this)
     sceneUtils.resize(this)
-    sceneUtils.debugController(this)
+    // sceneUtils.debugController(this)
     this.render()
   }
 
