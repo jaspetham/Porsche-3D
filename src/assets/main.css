@@ -367,7 +367,6 @@ h6 {
 
 .content-wrapper {
   position: relative;
-  background: var(--light-color);
   border-top-left-radius: 5rem;
   border-top-right-radius: 5rem;
 }
