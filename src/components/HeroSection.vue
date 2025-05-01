@@ -72,7 +72,7 @@ import SectionWrapper from "./common/SectionWrapper.vue";
   transform: translateX(100dvh);
 }
 
-#main-container.show {
+#hero.show {
   .section-wrapper,
   .first-title,
   .porsche-hero,

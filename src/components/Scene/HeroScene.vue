@@ -2,17 +2,21 @@
 import Canvas from "./Hero_Canvas.ts";
 import { onMounted, watch } from "vue";
 import { useCanvasStore } from "@/stores/CanvasInstance";
-import { useScrollEvent } from "@/composables/useScrollEvent";
+import { useScrollStore } from "@/stores/ScrollPos";
+import { storeToRefs } from "pinia";
 
 const canvasStore = useCanvasStore();
-const { scrollAmount } = useScrollEvent();
+
+const scrollStore = useScrollStore();
+const { scrollPos } = storeToRefs(scrollStore);
 
 onMounted(() => {
   const canvasInstance = new Canvas({
-    dom: document.getElementById("container"),
+    dom: document.getElementById("container") as HTMLCanvasElement,
   });
   canvasStore.setCanvasInstance(canvasInstance);
-  watch(scrollAmount, (newScrollValue) => {
+
+  watch(scrollPos, (newScrollValue) => {
     const maxScroll = 5000;
     if (canvasStore.canvasInstance && newScrollValue < maxScroll) {
       canvasStore.canvasInstance.onScrollEvents(newScrollValue, maxScroll);

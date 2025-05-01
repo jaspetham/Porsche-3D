@@ -348,13 +348,10 @@ h6 {
 
 #main-container {
   position: relative;
-  opacity: 0;
+}
+.show {
   transition: opacity 0.4s ease;
 }
-#main-container.show {
-  opacity: 1;
-}
-
 .movement {
   transition:
     transform 2s ease-out,

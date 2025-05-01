@@ -168,7 +168,7 @@ class HeroCanvas implements Canvas {
       const yPosition = { y: 10 }
       const transitionDelay = 2000
       const loadingCover = document.getElementById('loading-text-intro') as HTMLElement
-      const mainContainer = document.getElementById('main-container') as HTMLElement
+      const mainContainer = document.getElementById('hero') as HTMLElement
       const headerContainer = document.getElementById('header') as HTMLElement
 
       this.tweenCover = new Tween(yPosition)
