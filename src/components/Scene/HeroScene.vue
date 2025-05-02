@@ -5,21 +5,22 @@ import { useCanvasStore } from "@/stores/CanvasInstance";
 import { useScrollStore } from "@/stores/ScrollPos";
 import { storeToRefs } from "pinia";
 
-const canvasStore = useCanvasStore();
-
 const scrollStore = useScrollStore();
 const { scrollPos } = storeToRefs(scrollStore);
 
+const canvasStore = useCanvasStore();
+const { canvasInstance } = storeToRefs(canvasStore);
+
 onMounted(() => {
-  const canvasInstance = new Canvas({
+  const canvas = new Canvas({
     dom: document.getElementById("container") as HTMLCanvasElement,
   });
-  canvasStore.setCanvasInstance(canvasInstance);
+  canvasStore.setCanvasInstance(canvas);
 
   watch(scrollPos, (newScrollValue) => {
     const maxScroll = 5000;
-    if (canvasStore.canvasInstance && newScrollValue < maxScroll) {
-      canvasStore.canvasInstance.onScrollEvents(newScrollValue, maxScroll);
+    if (canvasInstance.value && newScrollValue < maxScroll) {
+      canvasInstance.value.onScrollEvents(newScrollValue, maxScroll);
     }
   });
 });

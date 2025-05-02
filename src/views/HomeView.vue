@@ -6,21 +6,35 @@ import MissionSection from "@/components/MissionSection.vue";
 import HeroScene from "@/components/Scene/HeroScene.vue";
 import ScreenLoader from "@/components/ScreenLoader.vue";
 
-import { watchEffect, onMounted, onUnmounted } from "vue";
+import { watchEffect, onMounted, onUnmounted, computed } from "vue";
 import { useScrollStore } from "@/stores/ScrollPos";
 import { storeToRefs } from "pinia";
 import { SectionIdEnum } from "@/type";
+import { useCanvasStore } from "@/stores/CanvasInstance";
 
 const scrollStore = useScrollStore();
-const { scrollTargetDebounced } = storeToRefs(useScrollStore());
+const { scrollTarget } = storeToRefs(useScrollStore());
+
+const canvasStore = useCanvasStore();
+const { canvasInstance } = storeToRefs(canvasStore);
+const isCanvasLoaded = computed(() => {
+  if (!canvasInstance.value) return false;
+  return canvasInstance.value.isLoaded.value;
+});
+
 onMounted(() => {
   scrollStore.init();
   watchEffect(() => {
     const heroElem = document.getElementById(SectionIdEnum.HERO);
-    if (scrollTargetDebounced.value == SectionIdEnum.ABOUT) {
-      heroElem?.classList.remove("show");
-    } else if (scrollTargetDebounced.value == SectionIdEnum.HERO) {
-      heroElem?.classList.add("show");
+    const header = document.getElementById("header");
+    if (isCanvasLoaded.value) {
+      if (scrollTarget.value == SectionIdEnum.ABOUT) {
+        heroElem?.classList.remove("show");
+        header?.classList.remove("show");
+      } else if (scrollTarget.value == SectionIdEnum.HERO) {
+        heroElem?.classList.add("show");
+        header?.classList.add("show");
+      }
     }
   });
 });
@@ -33,8 +47,8 @@ onUnmounted(() => {
   <ScreenLoader />
   <HeaderSection />
   <HeroScene />
-  <main id="main-container" class="show">
-    <!-- <main id="main-container"> -->
+  <!-- <main id="main-container" class="show"> -->
+  <main id="main-container">
     <HeroSection />
     <section class="content-wrapper">
       <AboutSection />

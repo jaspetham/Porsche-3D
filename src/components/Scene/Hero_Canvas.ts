@@ -11,6 +11,7 @@ import sceneUtils, {
   defaultValue,
 } from './SceneUtils' // Adjust path as needed
 import { Tween, Easing, Group as TweenGroup } from 'three/examples/jsm/libs/tween.module.js'
+import { ref } from 'vue'
 
 class HeroCanvas implements Canvas {
   // Required properties from Canvas interface
@@ -47,7 +48,7 @@ class HeroCanvas implements Canvas {
   private audioLoader?: THREE.AudioLoader
   private textures: { [key: string]: THREE.Texture } = {}
   private textureLoader?: THREE.TextureLoader
-
+  public isLoaded = ref(false)
   constructor(options: { dom: HTMLElement }) {
     sceneUtils.initializeScene(this, options)
     sceneUtils.cameraController(this, false)
@@ -168,7 +169,7 @@ class HeroCanvas implements Canvas {
       const yPosition = { y: 10 }
       const transitionDelay = 2000
       const loadingCover = document.getElementById('loading-text-intro') as HTMLElement
-      const mainContainer = document.getElementById('hero') as HTMLElement
+      const mainContainer = document.getElementById('main-container') as HTMLElement
       const headerContainer = document.getElementById('header') as HTMLElement
 
       this.tweenCover = new Tween(yPosition)
@@ -184,6 +185,7 @@ class HeroCanvas implements Canvas {
           sceneUtils.goToCameraView(this, CameraViewType.SideView, MaterialType.Exterior)
           headerContainer.classList.add('show')
           mainContainer.classList.add('show')
+          this.isLoaded.value = true
           setTimeout(() => {
             document.body.style.overflowY = 'auto'
           }, 2000)

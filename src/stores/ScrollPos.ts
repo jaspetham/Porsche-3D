@@ -13,10 +13,10 @@ function debounce<T extends unknown[]>(fn: (...args: T) => void, delay: number) 
 // Define the store
 export const useScrollStore = defineStore('scroll', () => {
   const scrollPos = shallowRef(0)
-  const scrollTarget = shallowRef<SectionIdEnum | null>(SectionIdEnum.HERO)
+  const scrollTarget = shallowRef<SectionIdEnum | null>(null)
 
   const scrollPosDebounced = shallowRef(0)
-  const scrollTargetDebounced = shallowRef<SectionIdEnum | null>(SectionIdEnum.HERO)
+  const scrollTargetDebounced = shallowRef<SectionIdEnum | null>(null)
 
   const scrollSections = shallowRef<HTMLElement[]>([])
 

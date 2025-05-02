@@ -23,9 +23,11 @@
   justify-content: center;
   transition: all 2s ease;
   opacity: 0;
-  transition-delay: 3s;
+  transform: translateY(-200px);
+  transition-delay: 2s;
   &.show {
     opacity: 1;
+    transform: translateY(0);
   }
 }
 nav {
