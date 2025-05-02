@@ -188,9 +188,6 @@ body {
   overflow-x: hidden;
   background-color: var(--light-color);
 }
-main {
-  overflow-x: hidden;
-}
 .w-limit {
   max-width: var(--w-limit);
 }

@@ -9,23 +9,24 @@ import ScreenLoader from "@/components/ScreenLoader.vue";
 import { watchEffect, onMounted, onUnmounted } from "vue";
 import { useScrollStore } from "@/stores/ScrollPos";
 import { storeToRefs } from "pinia";
+import { SectionIdEnum } from "@/type";
 
 const scrollStore = useScrollStore();
 const { scrollTargetDebounced } = storeToRefs(useScrollStore());
 onMounted(() => {
   scrollStore.init();
+  watchEffect(() => {
+    const heroElem = document.getElementById(SectionIdEnum.HERO);
+    if (scrollTargetDebounced.value == SectionIdEnum.ABOUT) {
+      heroElem?.classList.remove("show");
+    } else if (scrollTargetDebounced.value == SectionIdEnum.HERO) {
+      heroElem?.classList.add("show");
+    }
+  });
 });
 
 onUnmounted(() => {
   scrollStore.cleanup();
-});
-
-watchEffect(() => {
-  if (scrollTargetDebounced.value === "#about") {
-    document.getElementById("hero")?.classList.remove("show");
-  } else if (scrollTargetDebounced.value === "#hero") {
-    document.getElementById("hero")?.classList.add("show");
-  }
 });
 </script>
 <template>

@@ -1,14 +1,14 @@
 <script setup lang="ts">
 import { ref, watch } from "vue";
-import type { aboutDataInterface } from "@/type";
-import { detailsInfoEnum } from "@/type";
+import type { AboutDataInterface } from "@/type";
+import { DetailsInfoEnum } from "@/type";
 import AboutScene from "./Scene/AboutScene.vue";
 import DetailPage from "./common/DetailPage.vue";
 import aboutData from "@/assets/data/aboutData.json";
 
-const aboutDataState = ref<aboutDataInterface | null>(null);
+const aboutDataState = ref<AboutDataInterface | null>(null);
 
-const viewDetails = (data: aboutDataInterface) => {
+const viewDetails = (data: AboutDataInterface) => {
   aboutDataState.value = data;
 };
 
@@ -27,14 +27,14 @@ watch(aboutDataState, (newValue) => {
       <div class="p-5 px-10">
         <div
           class="cursor-pointer detail"
-          @click="viewDetails(aboutData[detailsInfoEnum.porsche])"
+          @click="viewDetails(aboutData[DetailsInfoEnum.PORSCHE])"
           data-aos="fade-right"
         >
           Porsche
         </div>
         <div
           class="cursor-pointer detail"
-          @click="viewDetails(aboutData[detailsInfoEnum.power])"
+          @click="viewDetails(aboutData[DetailsInfoEnum.POWER])"
           data-aos="fade-right"
           data-aos-delay="50"
         >
@@ -43,7 +43,7 @@ watch(aboutDataState, (newValue) => {
         <!-- https://www.elferspot.com/en/magazin/porsche-active-aerodynamics-paa/ -->
         <div
           class="cursor-pointer detail"
-          @click="viewDetails(aboutData[detailsInfoEnum.percision])"
+          @click="viewDetails(aboutData[DetailsInfoEnum.PERCISION])"
           data-aos="fade-right"
           data-aos-delay="100"
         >
@@ -52,7 +52,7 @@ watch(aboutDataState, (newValue) => {
         <!-- https://www.porsche.com/international/accessoriesandservice/exclusive-manufaktur/ -->
         <div
           class="cursor-pointer detail"
-          @click="viewDetails(aboutData[detailsInfoEnum.passions])"
+          @click="viewDetails(aboutData[DetailsInfoEnum.PASSIONS])"
           data-aos="fade-right"
           data-aos-delay="150"
         >

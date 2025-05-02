@@ -1,3 +1,4 @@
+import { SectionIdEnum } from '@/type'
 import { defineStore } from 'pinia'
 import { shallowRef } from 'vue'
 
@@ -12,10 +13,10 @@ function debounce<T extends unknown[]>(fn: (...args: T) => void, delay: number) 
 // Define the store
 export const useScrollStore = defineStore('scroll', () => {
   const scrollPos = shallowRef(0)
-  const scrollTarget = shallowRef('')
+  const scrollTarget = shallowRef<SectionIdEnum | null>(SectionIdEnum.HERO)
 
   const scrollPosDebounced = shallowRef(0)
-  const scrollTargetDebounced = shallowRef('')
+  const scrollTargetDebounced = shallowRef<SectionIdEnum | null>(SectionIdEnum.HERO)
 
   const scrollSections = shallowRef<HTMLElement[]>([])
 
@@ -26,7 +27,7 @@ export const useScrollStore = defineStore('scroll', () => {
 
     posRef.value = y
 
-    let closest = ''
+    let closest = null as SectionIdEnum | null
     let minDist = Infinity
     const offset = 100
 
@@ -35,7 +36,7 @@ export const useScrollStore = defineStore('scroll', () => {
       const dist = Math.abs(top - offset - y)
       if (dist < minDist) {
         minDist = dist
-        closest = `#${el.id}`
+        closest = el.id as SectionIdEnum
       }
     }
 
