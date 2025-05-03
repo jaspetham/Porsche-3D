@@ -94,7 +94,7 @@ onMounted(() => {
       Your browser does not support the video tag.
     </video>
     <div id="loading-wrapper" class="loading-details">
-      <div id="overlay"></div>
+      <div class="overlay"></div>
       <div id="loading-value">0%</div>
       <div class="headlines">
         <p class="headline">
@@ -178,7 +178,6 @@ onMounted(() => {
   font-size: 24px;
   font-weight: 100;
   color: #f9f0ec;
-  // display: none;
 }
 
 #background-video {
@@ -188,16 +187,6 @@ onMounted(() => {
   width: 100%;
   height: 100%;
   object-fit: cover;
-  z-index: -1;
-}
-
-#overlay {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background-color: rgba(0, 0, 0, 0.35);
   z-index: -1;
 }
 
