@@ -25,47 +25,28 @@ watch(aboutDataState, (newValue) => {
     <AboutScene />
     <div class="details w-full">
       <div class="p-5 px-10">
-        <div
-          class="cursor-pointer detail"
-          @click="viewDetails(aboutData[DetailsInfoEnum.PORSCHE])"
-          data-aos="fade-right"
-        >
+        <div class="cursor-pointer detail" @click="viewDetails(aboutData[DetailsInfoEnum.PORSCHE])"
+          data-aos="fade-right">
           Porsche
         </div>
-        <div
-          class="cursor-pointer detail"
-          @click="viewDetails(aboutData[DetailsInfoEnum.POWER])"
-          data-aos="fade-right"
-          data-aos-delay="50"
-        >
+        <div class="cursor-pointer detail" @click="viewDetails(aboutData[DetailsInfoEnum.POWER])" data-aos="fade-right"
+          data-aos-delay="50">
           Power
         </div>
         <!-- https://www.elferspot.com/en/magazin/porsche-active-aerodynamics-paa/ -->
-        <div
-          class="cursor-pointer detail"
-          @click="viewDetails(aboutData[DetailsInfoEnum.PERCISION])"
-          data-aos="fade-right"
-          data-aos-delay="100"
-        >
+        <div class="cursor-pointer detail" @click="viewDetails(aboutData[DetailsInfoEnum.PERCISION])"
+          data-aos="fade-right" data-aos-delay="100">
           Precision
         </div>
         <!-- https://www.porsche.com/international/accessoriesandservice/exclusive-manufaktur/ -->
-        <div
-          class="cursor-pointer detail"
-          @click="viewDetails(aboutData[DetailsInfoEnum.PASSIONS])"
-          data-aos="fade-right"
-          data-aos-delay="150"
-        >
+        <div class="cursor-pointer detail" @click="viewDetails(aboutData[DetailsInfoEnum.PASSIONS])"
+          data-aos="fade-right" data-aos-delay="150">
           Passions
         </div>
       </div>
     </div>
     <Transition name="detail">
-      <DetailPage
-        v-if="aboutDataState != null"
-        :data="aboutDataState"
-        @close="handleClose"
-      />
+      <DetailPage v-if="aboutDataState != null" :data="aboutDataState" @close="handleClose" />
     </Transition>
   </section>
 </template>
@@ -76,18 +57,21 @@ watch(aboutDataState, (newValue) => {
   position: absolute;
   left: 0;
   top: 0;
-  width: 100%;
+  width: 100dvw;
   height: 100%;
   border-top-left-radius: 5rem;
   border-top-right-radius: 5rem;
 }
+
 #about-scene {
   height: 100dvh;
+
   canvas {
     border-top-left-radius: 5rem;
     border-top-right-radius: 5rem;
   }
 }
+
 #about {
   .details {
     position: absolute;
@@ -101,9 +85,11 @@ watch(aboutDataState, (newValue) => {
     text-transform: uppercase;
     color: var(--light-color);
     text-shadow: 8px 10px 10px rgba(54, 69, 79, 0.45);
+
     .detail {
       position: relative;
       transition: all 0.3s ease;
+
       &:hover {
         transform: scale(1.1);
         color: var(--font-color);
@@ -115,11 +101,13 @@ watch(aboutDataState, (newValue) => {
 
 /* Transition for DetailPage */
 .detail-enter-active {
-  transition: opacity 0.5s ease; /* Fade-in duration */
+  transition: opacity 0.5s ease;
+  /* Fade-in duration */
 }
 
 .detail-leave-active {
-  transition: opacity 0.5s ease 0.5s; /* Fade-out duration with 1s delay */
+  transition: opacity 0.5s ease 0.5s;
+  /* Fade-out duration with 1s delay */
 }
 
 .detail-enter-from,
@@ -133,11 +121,13 @@ watch(aboutDataState, (newValue) => {
 }
 
 .detail-enter-active .detail-bg {
-  transition: transform 0.25s ease 0.5s; /* Transform with 1s delay after fade-in */
+  transition: transform 0.25s ease 0.5s;
+  /* Transform with 1s delay after fade-in */
 }
 
 .detail-leave-active .detail-bg {
-  transition: transform 0.25s ease; /* Transform immediately on leave */
+  transition: transform 0.25s ease;
+  /* Transform immediately on leave */
 }
 
 .detail-enter-from .detail-bg,
