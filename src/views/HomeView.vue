@@ -46,7 +46,7 @@ onUnmounted(() => {
 <template>
   <ScreenLoader />
   <HeaderSection />
-  <FloatingVolume/>
+  <FloatingVolume v-if="isCanvasLoaded" />
   <main id="main-container">
     <HeroSection />
     <section class="content-wrapper">

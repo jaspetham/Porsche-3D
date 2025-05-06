@@ -195,11 +195,11 @@ class HeroCanvas implements Canvas {
     })
   }
 
-  toggleAudio(toggle: boolean): void {
-    if (toggle) {
-      this.sound?.setVolume(0.5)
-    } else {
+  toggleAudio(muted: boolean): void {
+    if (muted) {
       this.sound?.setVolume(0)
+    } else {
+      this.sound?.setVolume(0.2)
     }
   }
 
@@ -253,7 +253,7 @@ class HeroCanvas implements Canvas {
   startAudio(): void {
     if (this.sound && !this.sound.isPlaying) {
       this.sound.play()
-      this.sound.setVolume(0.5)
+      this.sound.setVolume(0.2)
       const yPosition = { y: 10 }
       const transitionDelay = 2000
       const loadingCover = document.getElementById('loading-text-intro') as HTMLElement
