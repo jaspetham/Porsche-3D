@@ -2,9 +2,11 @@
 import porscheLogo from "@/assets/porsche_logo.svg";
 import porscheVector from "@/assets/porsche-vector-1.png";
 import SectionWrapper from "./common/SectionWrapper.vue";
+import HeroScene from "./Scene/HeroScene.vue";
 </script>
 <template>
   <section id="hero" class="first relative">
+    <HeroScene />
     <SectionWrapper>
       <div class="first-title movement">
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 4500 300">

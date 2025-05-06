@@ -70,12 +70,10 @@ onMounted(() => {
     aboutCanvas.toggleForceRender(forceRender);
   }
 
-  // Add keyboard event listener for debug controls
   window.addEventListener('keydown', handleKeyDown);
 });
 
 onBeforeUnmount(() => {
-  // Clean up event listener
   window.removeEventListener('keydown', handleKeyDown);
 
   // Call the cleanup method on the canvas instance

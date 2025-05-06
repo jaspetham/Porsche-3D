@@ -3,7 +3,6 @@ import AboutSection from "@/components/AboutSection.vue";
 import HeaderSection from "@/components/HeaderSection.vue";
 import HeroSection from "@/components/HeroSection.vue";
 import MissionSection from "@/components/MissionSection.vue";
-import HeroScene from "@/components/Scene/HeroScene.vue";
 import ScreenLoader from "@/components/ScreenLoader.vue";
 
 import { watchEffect, onMounted, onUnmounted, computed } from "vue";
@@ -11,6 +10,7 @@ import { useScrollStore } from "@/stores/ScrollPos";
 import { storeToRefs } from "pinia";
 import { SectionIdEnum } from "@/type";
 import { useCanvasStore } from "@/stores/CanvasInstance";
+import FloatingVolume from "@/components/common/FloatingVolume.vue";
 
 const scrollStore = useScrollStore();
 const { scrollTarget } = storeToRefs(useScrollStore());
@@ -46,8 +46,7 @@ onUnmounted(() => {
 <template>
   <ScreenLoader />
   <HeaderSection />
-  <HeroScene />
-  <!-- <main id="main-container" class="show"> -->
+  <FloatingVolume/>
   <main id="main-container">
     <HeroSection />
     <section class="content-wrapper">

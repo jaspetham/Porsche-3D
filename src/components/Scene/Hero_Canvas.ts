@@ -72,47 +72,37 @@ class HeroCanvas implements Canvas {
   setupOptimizedRendering(): void {
     // Create a standalone render function that doesn't self-request frames
     const renderFrame = () => {
-      // Update time
       this.elapsedTime = this.time.getElapsedTime()
 
-      // Update controls if available
       if (this.controls) {
         this.controls.update()
       }
 
-      // Update tweens
       if (this.tweenGroup) {
         this.tweenGroup.update()
       }
 
-      // Update debug helpers
       if (this.updateHelpers) {
         this.updateHelpers()
       }
 
-      // Make sure the renderer actually renders the scene
       if (this.scene && this.camera) {
         this.renderer.render(this.scene, this.camera)
       }
     }
 
-    // Set up visibility observer that manages the animation frame requests
-    // Use debug mode and ignore overlap since this is a fixed position background canvas
     this.cleanupVisibilityObserver = sceneUtils.setupVisibilityObserver(this, renderFrame, {
-      debug: true,
+      debug: false,
       forceRender: false,
-      ignoreOverlap: false, // This is a fixed background element, so ignore elements covering it
+      ignoreOverlap: false,
     })
   }
 
-  // Add method to toggle forced rendering
   toggleForceRender(force: boolean): void {
-    // Replace the current visibility observer with a new one using the updated setting
     if (this.cleanupVisibilityObserver) {
       this.cleanupVisibilityObserver()
     }
 
-    // Create a standalone render function that doesn't self-request frames
     const renderFrame = () => {
       this.elapsedTime = this.time.getElapsedTime()
       if (this.controls) {
@@ -130,22 +120,18 @@ class HeroCanvas implements Canvas {
     }
 
     this.cleanupVisibilityObserver = sceneUtils.setupVisibilityObserver(this, renderFrame, {
-      debug: true,
-      forceRender: force,
-      ignoreOverlap: true, // Always ignore overlap for fixed background canvases
+      debug: false,
+      forceRender: false,
+      ignoreOverlap: true,
     })
-
-    console.log(`Hero Canvas: Force render ${force ? 'enabled' : 'disabled'}`)
   }
 
   cleanup(): void {
-    // Clean up the visibility observer when component is unmounted
     if (this.cleanupVisibilityObserver) {
       this.cleanupVisibilityObserver()
       this.cleanupVisibilityObserver = null
     }
 
-    // Clean up other resources
     if (this.sound && this.sound.isPlaying) {
       this.sound.stop()
     }
@@ -154,7 +140,6 @@ class HeroCanvas implements Canvas {
       this.renderer.dispose()
     }
 
-    // Remove event listeners and free memory from textures
     Object.values(this.textures).forEach((texture) => texture.dispose())
   }
 
@@ -210,6 +195,14 @@ class HeroCanvas implements Canvas {
     })
   }
 
+  toggleAudio(toggle: boolean): void {
+    if (toggle) {
+      this.sound?.setVolume(0.5)
+    } else {
+      this.sound?.setVolume(0)
+    }
+  }
+
   loadAssets(): void {
     this.loadingManager = new THREE.LoadingManager()
     const loadingValue = document.getElementById('loading-value') as HTMLElement
@@ -260,6 +253,7 @@ class HeroCanvas implements Canvas {
   startAudio(): void {
     if (this.sound && !this.sound.isPlaying) {
       this.sound.play()
+      this.sound.setVolume(0.5)
       const yPosition = { y: 10 }
       const transitionDelay = 2000
       const loadingCover = document.getElementById('loading-text-intro') as HTMLElement

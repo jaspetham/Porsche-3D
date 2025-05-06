@@ -618,7 +618,6 @@ export const setupResize = (canvas: Canvas): void => {
   window.addEventListener('resize', () => resize(canvas))
 }
 
-// Add new visibility observer utility
 export const setupVisibilityObserver = (
   canvas: Canvas,
   renderFunction: () => void,
@@ -646,9 +645,9 @@ export const setupVisibilityObserver = (
       }
     },
     {
-      root: null, // Use viewport as root
+      root: null,
       rootMargin: '0px',
-      threshold: 0.01, // Even a tiny bit visible will trigger
+      threshold: 0.01,
     },
   )
 
@@ -657,9 +656,7 @@ export const setupVisibilityObserver = (
     observer.observe(canvas.container)
   }
 
-  // Check if canvas is covered by higher z-index elements
   const checkIfCovered = (): boolean => {
-    // Skip this check if forceRender is true or we're ignoring overlap (fixed background canvases)
     if (forceRender || ignoreOverlap) return false
 
     if (!canvas.container) return false
@@ -667,42 +664,33 @@ export const setupVisibilityObserver = (
     const rect = canvas.container.getBoundingClientRect()
     if (rect.width === 0 || rect.height === 0) return true
 
-    // Check center point of canvas
     const centerX = rect.left + rect.width / 2
     const centerY = rect.top + rect.height / 2
 
-    // Get the element at the center point
     const elementAtCenter = document.elementFromPoint(centerX, centerY)
 
-    // Check if the canvas element itself is what we hit
     const canvasElement = canvas.renderer.domElement
     if (elementAtCenter === canvasElement) {
       return false
     }
 
-    // If the canvas container contains the element at center, it's a child element (like overlay)
-    // which is expected and doesn't count as "covered"
     if (canvas.container.contains(elementAtCenter)) {
       return false
     }
 
-    // Otherwise, something else is covering the canvas
     if (debug) console.log('Canvas is covered by another element:', elementAtCenter)
     return true
   }
 
   // Optimized render loop that checks visibility conditions
   const optimizedRenderLoop = () => {
-    // Always request the next frame first to ensure smooth animation
     animationFrameId = requestAnimationFrame(optimizedRenderLoop)
 
-    // Only render if visible and not covered
     if (isVisible && !checkIfCovered()) {
       renderFunction()
     }
   }
 
-  // Start the render loop
   const startRenderLoop = () => {
     if (animationFrameId === null) {
       if (debug) console.log('Starting render loop')
@@ -710,7 +698,6 @@ export const setupVisibilityObserver = (
     }
   }
 
-  // Stop the render loop
   const stopRenderLoop = () => {
     if (animationFrameId !== null) {
       if (debug) console.log('Stopping render loop')
@@ -719,13 +706,10 @@ export const setupVisibilityObserver = (
     }
   }
 
-  // Also check on scroll events (with throttling)
   let scrollTimeout: number | null = null
   const handleScroll = () => {
-    // Skip if forceRender is true or we're ignoring overlap
     if (forceRender || ignoreOverlap) return
 
-    // Skip if already stopped or if scroll position hasn't changed much
     if (Math.abs(window.scrollY - lastScrollPosition) < 50) return
 
     lastScrollPosition = window.scrollY
@@ -745,15 +729,13 @@ export const setupVisibilityObserver = (
           startRenderLoop()
         }
       }
-    }, 100) // Throttle to 100ms
+    }, 100)
   }
 
   window.addEventListener('scroll', handleScroll, { passive: true })
 
-  // Initial check and start immediately
   startRenderLoop()
 
-  // Return cleanup function
   return () => {
     stopRenderLoop()
     if (canvas.container) {

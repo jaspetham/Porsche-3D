@@ -32,7 +32,6 @@ class AboutCanvas implements Canvas {
   gltfLoader?: GLTFLoader
   loadingManager?: THREE.LoadingManager
 
-  // Custom properties specific to AboutCanvas
   private radius: number
   private speed: number
   private angle?: number
@@ -51,18 +50,14 @@ class AboutCanvas implements Canvas {
     sceneUtils.setupResize(this)
     sceneUtils.resize(this)
 
-    // Replace direct render call with visibility-aware rendering
     this.setupOptimizedRendering()
   }
 
   setupOptimizedRendering(): void {
-    // Create a standalone render function that doesn't self-request frames
     const renderFrame = () => {
-      // Update time and angle
       this.elapsedTime = this.time.getElapsedTime()
       this.angle = this.elapsedTime * this.speed
 
-      // Update controls if available
       if (this.controls) {
         this.controls.update()
       }
@@ -72,42 +67,33 @@ class AboutCanvas implements Canvas {
         this.updateHelpers()
       }
 
-      // GSAP smooth position update - don't animate if not visible
       gsap.to(this.camera.position, {
         x: Math.cos(this.angle) * this.radius,
         z: Math.sin(this.angle) * this.radius + 0.5,
         y: 0.2,
-        duration: 0.5, // Adjust for responsiveness
+        duration: 0.5,
         ease: 'power1.out',
-        overwrite: true, // Prevent animation queue buildup
+        overwrite: true,
       })
 
-      // Update camera look target
       this.camera.lookAt(0.5, 0, 1)
 
-      // Make sure the renderer actually renders the scene
       if (this.scene && this.camera) {
         this.renderer.render(this.scene, this.camera)
       }
     }
 
-    // Set up visibility observer that manages the animation frame requests
-    // Use debug mode and ignore overlap since this is a fixed position background canvas
     this.cleanupVisibilityObserver = sceneUtils.setupVisibilityObserver(this, renderFrame, {
-      debug: true,
+      debug: false,
       forceRender: false,
-      ignoreOverlap: false, // This is a fixed background element, so ignore elements covering it
     })
   }
 
-  // Add method to toggle forced rendering
   toggleForceRender(force: boolean): void {
-    // Replace the current visibility observer with a new one using the updated setting
     if (this.cleanupVisibilityObserver) {
       this.cleanupVisibilityObserver()
     }
 
-    // Create a standalone render function that doesn't self-request frames
     const renderFrame = () => {
       this.elapsedTime = this.time.getElapsedTime()
       this.angle = this.elapsedTime * this.speed
@@ -137,22 +123,18 @@ class AboutCanvas implements Canvas {
     }
 
     this.cleanupVisibilityObserver = sceneUtils.setupVisibilityObserver(this, renderFrame, {
-      debug: true,
-      forceRender: force,
-      ignoreOverlap: true, // Always ignore overlap for fixed background canvases
+      debug: false,
+      forceRender: false,
+      ignoreOverlap: false,
     })
-
-    console.log(`About Canvas: Force render ${force ? 'enabled' : 'disabled'}`)
   }
 
   cleanup(): void {
-    // Clean up the visibility observer when component is unmounted
     if (this.cleanupVisibilityObserver) {
       this.cleanupVisibilityObserver()
       this.cleanupVisibilityObserver = null
     }
 
-    // Clean up other resources
     if (this.renderer) {
       this.renderer.dispose()
     }
