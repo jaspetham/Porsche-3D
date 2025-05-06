@@ -39,6 +39,17 @@ const handleKeyDown = (e: KeyboardEvent) => {
         break;
     }
   }
+
+  // Alt + R to toggle force rendering
+  if (e.altKey && e.key === 'r') {
+    if (secondaryCanvasInstance.value.toggleForceRender) {
+      // Toggle between true and false
+      const currentState = localStorage.getItem('aboutForceRender') !== 'false';
+      const newState = !currentState;
+      localStorage.setItem('aboutForceRender', String(newState));
+      secondaryCanvasInstance.value.toggleForceRender(newState);
+    }
+  }
 };
 
 onMounted(() => {
@@ -53,6 +64,12 @@ onMounted(() => {
   });
   canvasStore.setSecondaryCanvasInstance(aboutCanvas);
 
+  // Apply stored force render setting if available
+  if (aboutCanvas.toggleForceRender) {
+    const forceRender = localStorage.getItem('aboutForceRender') !== 'false';
+    aboutCanvas.toggleForceRender(forceRender);
+  }
+
   // Add keyboard event listener for debug controls
   window.addEventListener('keydown', handleKeyDown);
 });
@@ -60,6 +77,12 @@ onMounted(() => {
 onBeforeUnmount(() => {
   // Clean up event listener
   window.removeEventListener('keydown', handleKeyDown);
+
+  // Call the cleanup method on the canvas instance
+  if (secondaryCanvasInstance.value) {
+    secondaryCanvasInstance.value.cleanup();
+    canvasStore.setSecondaryCanvasInstance(null);
+  }
 });
 </script>
 

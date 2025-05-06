@@ -8,13 +8,13 @@ export const useCanvasStore = defineStore('canvas', () => {
   // Use specific types for the specific canvases
   const canvasInstance = shallowRef<HeroCanvas | null>(null)
 
-  const setCanvasInstance = (instance: HeroCanvas) => {
+  const setCanvasInstance = (instance: HeroCanvas | null) => {
     canvasInstance.value = instance
   }
 
   const secondaryCanvasInstance = shallowRef<AboutCanvas | null>(null)
 
-  const setSecondaryCanvasInstance = (instance: AboutCanvas) => {
+  const setSecondaryCanvasInstance = (instance: AboutCanvas | null) => {
     secondaryCanvasInstance.value = instance
   }
 

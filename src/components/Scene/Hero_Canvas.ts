@@ -50,6 +50,7 @@ class HeroCanvas implements Canvas {
   private textureLoader?: THREE.TextureLoader
   public isLoaded = ref(false)
   private updateHelpers?: () => void
+  private cleanupVisibilityObserver: (() => void) | null = null
 
   constructor(options: { dom: HTMLElement }) {
     sceneUtils.initializeScene(this, options)
@@ -63,7 +64,98 @@ class HeroCanvas implements Canvas {
     sceneUtils.setupResize(this)
     sceneUtils.resize(this)
     // sceneUtils.debugController(this)
-    this.render()
+
+    // Replace direct render call with visibility-aware rendering
+    this.setupOptimizedRendering()
+  }
+
+  setupOptimizedRendering(): void {
+    // Create a standalone render function that doesn't self-request frames
+    const renderFrame = () => {
+      // Update time
+      this.elapsedTime = this.time.getElapsedTime()
+
+      // Update controls if available
+      if (this.controls) {
+        this.controls.update()
+      }
+
+      // Update tweens
+      if (this.tweenGroup) {
+        this.tweenGroup.update()
+      }
+
+      // Update debug helpers
+      if (this.updateHelpers) {
+        this.updateHelpers()
+      }
+
+      // Make sure the renderer actually renders the scene
+      if (this.scene && this.camera) {
+        this.renderer.render(this.scene, this.camera)
+      }
+    }
+
+    // Set up visibility observer that manages the animation frame requests
+    // Use debug mode and ignore overlap since this is a fixed position background canvas
+    this.cleanupVisibilityObserver = sceneUtils.setupVisibilityObserver(this, renderFrame, {
+      debug: true,
+      forceRender: false,
+      ignoreOverlap: false, // This is a fixed background element, so ignore elements covering it
+    })
+  }
+
+  // Add method to toggle forced rendering
+  toggleForceRender(force: boolean): void {
+    // Replace the current visibility observer with a new one using the updated setting
+    if (this.cleanupVisibilityObserver) {
+      this.cleanupVisibilityObserver()
+    }
+
+    // Create a standalone render function that doesn't self-request frames
+    const renderFrame = () => {
+      this.elapsedTime = this.time.getElapsedTime()
+      if (this.controls) {
+        this.controls.update()
+      }
+      if (this.tweenGroup) {
+        this.tweenGroup.update()
+      }
+      if (this.updateHelpers) {
+        this.updateHelpers()
+      }
+      if (this.scene && this.camera) {
+        this.renderer.render(this.scene, this.camera)
+      }
+    }
+
+    this.cleanupVisibilityObserver = sceneUtils.setupVisibilityObserver(this, renderFrame, {
+      debug: true,
+      forceRender: force,
+      ignoreOverlap: true, // Always ignore overlap for fixed background canvases
+    })
+
+    console.log(`Hero Canvas: Force render ${force ? 'enabled' : 'disabled'}`)
+  }
+
+  cleanup(): void {
+    // Clean up the visibility observer when component is unmounted
+    if (this.cleanupVisibilityObserver) {
+      this.cleanupVisibilityObserver()
+      this.cleanupVisibilityObserver = null
+    }
+
+    // Clean up other resources
+    if (this.sound && this.sound.isPlaying) {
+      this.sound.stop()
+    }
+
+    if (this.renderer) {
+      this.renderer.dispose()
+    }
+
+    // Remove event listeners and free memory from textures
+    Object.values(this.textures).forEach((texture) => texture.dispose())
   }
 
   onScrollEvents(scrollAmount: number, maxScroll: number): void {
@@ -253,21 +345,6 @@ class HeroCanvas implements Canvas {
       shadowCameraHelper.update()
       directionalLightHelper.update()
     }
-  }
-
-  render(): void {
-    this.elapsedTime = this.time.getElapsedTime()
-    if (this.controls) {
-      this.controls.update()
-    }
-    if (this.tweenGroup) {
-      this.tweenGroup.update()
-    }
-    if (this.updateHelpers) {
-      this.updateHelpers()
-    }
-    requestAnimationFrame(this.render.bind(this))
-    this.renderer.render(this.scene, this.camera)
   }
 }
 

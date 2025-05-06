@@ -41,6 +41,15 @@ const handleKeyDown = (e: KeyboardEvent) => {
         canvasInstance.value.setShadowQuality('high');
         console.log('Shadows: HIGH');
         break;
+      case 'R':  // Shift+R to toggle force rendering
+        if (canvasInstance.value.toggleForceRender) {
+          // Toggle between true and false
+          const currentState = localStorage.getItem('heroForceRender') !== 'false';
+          const newState = !currentState;
+          localStorage.setItem('heroForceRender', String(newState));
+          canvasInstance.value.toggleForceRender(newState);
+        }
+        break;
     }
   }
 };
@@ -54,6 +63,12 @@ onMounted(() => {
   // Add keyboard event listener for debug controls
   window.addEventListener('keydown', handleKeyDown);
 
+  // Apply stored force render setting if available
+  if (canvas.toggleForceRender) {
+    const forceRender = localStorage.getItem('heroForceRender') !== 'false';
+    canvas.toggleForceRender(forceRender);
+  }
+
   watch(scrollPos, (newScrollValue) => {
     const maxScroll = 5000;
     if (canvasInstance.value && newScrollValue < maxScroll) {
@@ -65,6 +80,12 @@ onMounted(() => {
 onBeforeUnmount(() => {
   // Clean up event listener
   window.removeEventListener('keydown', handleKeyDown);
+
+  // Call the cleanup method on the canvas instance
+  if (canvasInstance.value) {
+    canvasInstance.value.cleanup();
+    canvasStore.setCanvasInstance(null);
+  }
 });
 </script>
 
