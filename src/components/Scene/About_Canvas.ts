@@ -85,7 +85,7 @@ class AboutCanvas implements Canvas {
 
     this.cleanupVisibilityObserver = sceneUtils.setupVisibilityObserver(this, renderFrame, {
       debug: false,
-      forceRender: false,
+      forceRender: true,
     })
   }
 
@@ -124,7 +124,7 @@ class AboutCanvas implements Canvas {
 
     this.cleanupVisibilityObserver = sceneUtils.setupVisibilityObserver(this, renderFrame, {
       debug: false,
-      forceRender: false,
+      forceRender: true,
       ignoreOverlap: false,
     })
   }
