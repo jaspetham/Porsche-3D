@@ -1,8 +1,8 @@
 import * as THREE from 'three'
 import { GUI } from 'lil-gui'
 import { DRACOLoader } from 'three/examples/jsm/loaders/DRACOLoader.js'
-import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader'
-import type { GLTF } from 'three/examples/jsm/loaders/GLTFLoader'
+import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js'
+import type { GLTF } from 'three/examples/jsm/loaders/GLTFLoader.js'
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js'
 import { RGBELoader } from 'three/examples/jsm/loaders/RGBELoader.js'
 import gsap from 'gsap'
@@ -56,14 +56,14 @@ export const defaultValue = {
   },
   materialType: {
     [MaterialType.Interior]: {
-      metalness: 0.5,
-      roughness: 0.5,
-      envMapIntensity: 2,
+      metalness: 0.3,
+      roughness: 0.7,
+      envMapIntensity: 1.5,
     },
     [MaterialType.Exterior]: {
-      metalness: 0.5,
-      roughness: 0.3,
-      envMapIntensity: 0.8,
+      metalness: 0.6,
+      roughness: 0.2,
+      envMapIntensity: 1.2,
     },
   },
   porschDefaultValue: {
@@ -144,11 +144,32 @@ export const assetPaths: string[] = [
 ]
 
 export const addLights = (canvas: Canvas): void => {
-  const ambientLight = new THREE.AmbientLight(0xffffff, 0.5)
-  canvas.directionalLight = new THREE.DirectionalLight(0xffffff, 1)
-  canvas.directionalLight.position.set(-0.33, 0.33, 1.8)
+  // Ambient light - softer, less intensity
+  const ambientLight = new THREE.AmbientLight(0xffffff, 0.3)
   canvas.scene.add(ambientLight)
+
+  // Main directional light (key light)
+  canvas.directionalLight = new THREE.DirectionalLight(0xffffff, 1.2)
+  canvas.directionalLight.position.set(-0.33, 0.8, 1.8)
+  canvas.directionalLight.castShadow = true
+
+  // Create more realistic shadows if needed
+  if (canvas.directionalLight.shadow) {
+    canvas.directionalLight.shadow.mapSize.width = 1024
+    canvas.directionalLight.shadow.mapSize.height = 1024
+    canvas.directionalLight.shadow.bias = -0.001
+  }
   canvas.scene.add(canvas.directionalLight)
+
+  // Fill light - adds illumination to shadow areas
+  const fillLight = new THREE.DirectionalLight(0xffffff, 0.5)
+  fillLight.position.set(1, 0.2, -1)
+  canvas.scene.add(fillLight)
+
+  // Rim light - highlights edges
+  const rimLight = new THREE.DirectionalLight(0xffffee, 0.3)
+  rimLight.position.set(0, 1, -1)
+  canvas.scene.add(rimLight)
 }
 
 export const addObjects = (canvas: Canvas): void => {
@@ -164,6 +185,8 @@ export const addObjects = (canvas: Canvas): void => {
   canvas.plane.rotation.x = -Math.PI / 2
   canvas.plane.position.y = -0.7
   canvas.plane.position.z = 0.25
+  // Make the ground plane receive shadows
+  canvas.plane.receiveShadow = true
   canvas.scene.add(canvas.plane)
 }
 
@@ -487,13 +510,19 @@ export const initializeScene = (canvas: Canvas, options: { dom: HTMLElement }): 
   canvas.container = options.dom
   canvas.width = canvas.container.offsetWidth
   canvas.height = canvas.container.offsetHeight
-  canvas.renderer = new THREE.WebGLRenderer({ antialias: true })
+  canvas.renderer = new THREE.WebGLRenderer({
+    antialias: true,
+  })
   canvas.renderer.setClearColor(0xececec, 1)
-  canvas.renderer.setPixelRatio(window.devicePixelRatio)
+  canvas.renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2)) // Limit pixel ratio for performance
   canvas.renderer.setSize(canvas.width, canvas.height)
   canvas.renderer.setClearColor(colorPalatte.primaryColor, 1)
-  canvas.renderer.toneMapping = THREE.ACESFilmicToneMapping
+  // Use a less aggressive tone mapping
+  canvas.renderer.toneMapping = THREE.LinearToneMapping
   canvas.renderer.outputColorSpace = THREE.SRGBColorSpace
+  // Enable shadows for more realism
+  canvas.renderer.shadowMap.enabled = true
+  canvas.renderer.shadowMap.type = THREE.PCFSoftShadowMap
   canvas.container.appendChild(canvas.renderer.domElement)
   canvas.time = new THREE.Clock()
   canvas.elapsedTime = 0
@@ -507,7 +536,8 @@ export const loadHDR = (canvas: Canvas): void => {
   rgbeLoader.load('/models/env.hdr', (texture: THREE.DataTexture) => {
     const envMap = pmremGenerator.fromEquirectangular(texture).texture
     canvas.scene.environment = envMap
-    canvas.renderer.toneMappingExposure = 0.6
+    // Adjust tone mapping exposure for more balanced lighting
+    canvas.renderer.toneMappingExposure = 0.8
     texture.dispose()
     pmremGenerator.dispose()
   })
@@ -536,6 +566,8 @@ export const loadModels = (canvas: Canvas): void => {
             material.map.generateMipmaps = false
             material.map.needsUpdate = true
           }
+          // Enable shadow casting for each mesh
+          child.castShadow = true
           material.needsUpdate = true
         }
       })

@@ -36,6 +36,7 @@ class AboutCanvas implements Canvas {
   private radius: number
   private speed: number
   private angle?: number // Added for render method
+  private updateHelpers?: () => void
 
   constructor(options: { dom: HTMLElement }) {
     sceneUtils.initializeScene(this, options)
@@ -52,12 +53,75 @@ class AboutCanvas implements Canvas {
     this.render()
   }
 
+  setShadowQuality(quality: 'low' | 'medium' | 'high' | 'off'): void {
+    if (!this.renderer || !this.porsche || !this.directionalLight) return
+
+    // Toggle shadow rendering
+    this.renderer.shadowMap.enabled = quality !== 'off'
+
+    // Configure shadow map size based on quality
+    if (this.directionalLight.shadow) {
+      switch (quality) {
+        case 'high':
+          this.directionalLight.shadow.mapSize.width = 2048
+          this.directionalLight.shadow.mapSize.height = 2048
+          this.renderer.shadowMap.type = THREE.PCFSoftShadowMap
+          break
+        case 'medium':
+          this.directionalLight.shadow.mapSize.width = 1024
+          this.directionalLight.shadow.mapSize.height = 1024
+          this.renderer.shadowMap.type = THREE.PCFShadowMap
+          break
+        case 'low':
+          this.directionalLight.shadow.mapSize.width = 512
+          this.directionalLight.shadow.mapSize.height = 512
+          this.renderer.shadowMap.type = THREE.BasicShadowMap
+          break
+        case 'off':
+          // Shadows already disabled above
+          break
+      }
+
+      // Update shadow bias to reduce acne/artifacts
+      this.directionalLight.shadow.bias = quality === 'high' ? -0.0005 : -0.001
+
+      // Apply shadow settings to the model
+      this.porsche?.traverse((child: THREE.Object3D) => {
+        if (child instanceof THREE.Mesh) {
+          child.castShadow = quality !== 'off'
+        }
+      })
+    }
+  }
+
+  addDebugHelpers(): void {
+    if (!this.scene || !this.directionalLight) return
+
+    // Add a camera helper
+    const shadowCameraHelper = new THREE.CameraHelper(this.directionalLight.shadow.camera)
+    this.scene.add(shadowCameraHelper)
+
+    // Add a directional light helper
+    const directionalLightHelper = new THREE.DirectionalLightHelper(this.directionalLight, 1)
+    this.scene.add(directionalLightHelper)
+
+    // Update helpers in the render loop
+    this.updateHelpers = () => {
+      shadowCameraHelper.update()
+      directionalLightHelper.update()
+    }
+  }
+
   render(): void {
     this.elapsedTime = this.time.getElapsedTime()
     this.angle = this.elapsedTime * this.speed
 
     if (this.controls) {
       this.controls.update()
+    }
+
+    if (this.updateHelpers) {
+      this.updateHelpers()
     }
 
     // GSAP smooth position update

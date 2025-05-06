@@ -1,11 +1,11 @@
 <script setup lang="ts">
-import type { aboutDataInterface } from "@/type";
+import type { AboutDataInterface } from "@/type";
 import { onMounted, onUnmounted, ref, nextTick } from "vue";
 import { gsap } from "gsap";
 import CustomButton from "./CustomButton.vue";
 
 const props = defineProps<{
-  data: aboutDataInterface;
+  data: AboutDataInterface;
 }>();
 
 const emit = defineEmits<{
@@ -167,7 +167,7 @@ const pageCloseAnimation = (onComplete: () => void) => {
       );
   }
 };
-let intervalId: number | null = null;
+let intervalId: NodeJS.Timeout | null = null;
 onMounted(() => {
   intervalId = setInterval(cycleImages, 250);
   nextTick(() => {

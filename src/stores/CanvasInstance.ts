@@ -1,17 +1,20 @@
 import { defineStore } from 'pinia'
 import { shallowRef } from 'vue'
-import Canvas from '@/components/Scene/Hero_Canvas.ts'
+import HeroCanvas from '@/components/Scene/Hero_Canvas.ts'
+import AboutCanvas from '@/components/Scene/About_Canvas.ts'
 
 // Define the store
 export const useCanvasStore = defineStore('canvas', () => {
-  const canvasInstance = shallowRef<Canvas | null>(null)
+  // Use specific types for the specific canvases
+  const canvasInstance = shallowRef<HeroCanvas | null>(null)
 
-  const setCanvasInstance = (instance: Canvas) => {
+  const setCanvasInstance = (instance: HeroCanvas) => {
     canvasInstance.value = instance
   }
-  const secondaryCanvasInstance = shallowRef<Canvas | null>(null)
 
-  const setSecondaryCanvasInstance = (instance: Canvas) => {
+  const secondaryCanvasInstance = shallowRef<AboutCanvas | null>(null)
+
+  const setSecondaryCanvasInstance = (instance: AboutCanvas) => {
     secondaryCanvasInstance.value = instance
   }
 

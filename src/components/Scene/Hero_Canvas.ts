@@ -49,6 +49,8 @@ class HeroCanvas implements Canvas {
   private textures: { [key: string]: THREE.Texture } = {}
   private textureLoader?: THREE.TextureLoader
   public isLoaded = ref(false)
+  private updateHelpers?: () => void
+
   constructor(options: { dom: HTMLElement }) {
     sceneUtils.initializeScene(this, options)
     sceneUtils.cameraController(this, false)
@@ -194,6 +196,65 @@ class HeroCanvas implements Canvas {
     }
   }
 
+  setShadowQuality(quality: 'low' | 'medium' | 'high' | 'off'): void {
+    if (!this.renderer || !this.porsche || !this.directionalLight) return
+
+    // Toggle shadow rendering
+    this.renderer.shadowMap.enabled = quality !== 'off'
+
+    // Configure shadow map size based on quality
+    if (this.directionalLight.shadow) {
+      switch (quality) {
+        case 'high':
+          this.directionalLight.shadow.mapSize.width = 2048
+          this.directionalLight.shadow.mapSize.height = 2048
+          this.renderer.shadowMap.type = THREE.PCFSoftShadowMap
+          break
+        case 'medium':
+          this.directionalLight.shadow.mapSize.width = 1024
+          this.directionalLight.shadow.mapSize.height = 1024
+          this.renderer.shadowMap.type = THREE.PCFShadowMap
+          break
+        case 'low':
+          this.directionalLight.shadow.mapSize.width = 512
+          this.directionalLight.shadow.mapSize.height = 512
+          this.renderer.shadowMap.type = THREE.BasicShadowMap
+          break
+        case 'off':
+          // Shadows already disabled above
+          break
+      }
+
+      // Update shadow bias to reduce acne/artifacts
+      this.directionalLight.shadow.bias = quality === 'high' ? -0.0005 : -0.001
+
+      // Apply shadow settings to the model
+      this.porsche.traverse((child: THREE.Object3D) => {
+        if (child instanceof THREE.Mesh) {
+          child.castShadow = quality !== 'off'
+        }
+      })
+    }
+  }
+
+  addDebugHelpers(): void {
+    if (!this.scene || !this.directionalLight) return
+
+    // Add a camera helper
+    const shadowCameraHelper = new THREE.CameraHelper(this.directionalLight.shadow.camera)
+    this.scene.add(shadowCameraHelper)
+
+    // Add a directional light helper
+    const directionalLightHelper = new THREE.DirectionalLightHelper(this.directionalLight, 1)
+    this.scene.add(directionalLightHelper)
+
+    // Update helpers in the render loop
+    this.updateHelpers = () => {
+      shadowCameraHelper.update()
+      directionalLightHelper.update()
+    }
+  }
+
   render(): void {
     this.elapsedTime = this.time.getElapsedTime()
     if (this.controls) {
@@ -201,6 +262,9 @@ class HeroCanvas implements Canvas {
     }
     if (this.tweenGroup) {
       this.tweenGroup.update()
+    }
+    if (this.updateHelpers) {
+      this.updateHelpers()
     }
     requestAnimationFrame(this.render.bind(this))
     this.renderer.render(this.scene, this.camera)
