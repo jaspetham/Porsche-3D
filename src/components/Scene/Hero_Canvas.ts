@@ -209,7 +209,9 @@ class HeroCanvas implements Canvas {
     const loadingWrapper = document.getElementById('loading-wrapper') as HTMLElement
 
     this.loadingManager.onStart = () => {
-      loadingValue.innerHTML = '0%'
+      if (loadingValue) {
+        loadingValue.innerHTML = '0%'
+      }
     }
 
     sceneUtils.loadHDR(this)
@@ -223,11 +225,15 @@ class HeroCanvas implements Canvas {
       } else {
         maxProgress = progress
       }
-      loadingValue.innerHTML = `${progress.toFixed(0)}%`
+      if (loadingValue) {
+        loadingValue.innerHTML = `${progress.toFixed(0)}%`
+      }
     }
 
     this.loadingManager.onLoad = () => {
-      loadingWrapper.classList.add('loaded')
+      if (loadingWrapper) {
+        loadingWrapper.classList.add('loaded')
+      }
       sceneUtils.goToCameraView(this, CameraViewType.FrontView, MaterialType.Exterior)
       this.camera.position.set(
         defaultValue.cameraView[CameraViewType.FrontView].position.x,

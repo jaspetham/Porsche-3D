@@ -508,7 +508,7 @@ export const initializeScene = (canvas: Canvas, options: { dom: HTMLElement }): 
   const { colorPalatte } = defaultValue
   canvas.scene = new THREE.Scene()
   canvas.container = options.dom
-  canvas.width = canvas.container.offsetWidth
+  canvas.width = canvas.container.getBoundingClientRect().width
   canvas.height = canvas.container.offsetHeight
   canvas.renderer = new THREE.WebGLRenderer({
     antialias: true,

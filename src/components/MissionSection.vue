@@ -98,17 +98,14 @@ watch(
 );
 </script>
 <template>
-  <section id="mission" class="w-screen relative">
-    <div class="grid grid-cols-2 h-full">
-      <div class="relative z-10">
+  <section id="mission" class="relative">
+    <div class="grid grid-cols-1 md:grid-cols-2 h-full">
+      <div class="relative z-10 h-[50vh] md:h-auto">
         <div class="mission-bg-wrapper" :style="{ width: bgWidthComputed + 'dvw' }">
-          <div class="mission-bg sticky top-0 h-[100dvh]">
+          <div class="mission-bg md:sticky md:top-0 h-full md:h-[100dvh]">
             <div class="w-full h-full">
-              <img
-                src="/assets/mission/founder.avif"
-                alt="mission-bg"
-                class="w-full h-full object-cover aspect-video"
-              />
+              <img src="/assets/mission/founder.avif" alt="mission-bg"
+                class="w-full h-full object-cover aspect-video" />
               <div class="overlay z-10"></div>
             </div>
             <div class="mission-nav-wrapper mix-blend-difference z-20">
@@ -122,39 +119,25 @@ watch(
           </div>
         </div>
       </div>
-      <div class="mission-desc p-10 flex flex-col gap-20">
-        <div class="h-[150vh]"></div>
+      <div class="mission-desc bg-white p-6 md:p-10 flex flex-col gap-10 md:gap-20">
+        <div class="hidden md:block lg:block h-[50vh] md:h-[150vh]"></div>
         <div class="min-h-screen" id="story">
-          <div
-            class="content font-bold uppercase ff-primary clr-dark flex flex-col gap-3"
-          >
-            <h2 class="fs-900 ff-primary">Ferdinand Alexander Porsche</h2>
-            <p class="fs-600 tracking-tighter mt-12">
+          <div class="content font-bold uppercase ff-primary clr-dark flex flex-col gap-3">
+            <h2 class="fs-400 md:fs-600 lg:fs-900 ff-primary">Ferdinand Alexander Porsche</h2>
+            <p class="fs-400 md:fs-600 tracking-tighter mt-12">
               The founder of Porsche Design. The legacy of professor Ferdinand Alexander
               Porsche. Perfection since 1972. A philosophy that follows the zeitgeist.
             </p>
             <div
-              class="moving-text-wrapper overflow-hidden relative w-full h-[75vh] mt-12 p-y-10"
-            >
+              class="moving-text-wrapper overflow-hidden relative w-full h-[50vh] sm:h-[60vh] md:h-[75vh] mt-6 md:mt-12 py-5 md:py-10">
               <div class="moving-img">
-                <img
-                  :src="founderImages[currentImageIndex]"
-                  alt="professor"
-                  class="w-full h-full object-cover"
-                />
+                <img :src="founderImages[currentImageIndex]" alt="professor" class="w-full h-full object-cover" />
               </div>
-              <img
-                src="/assets/mission/pixel-bg.jpg"
-                alt="pixel-bg"
-                class="absolute w-full h-full object-cover mix-blend-saturation z-[1]"
-              />
-              <p
-                v-for="(text, index) in texts"
-                :key="index"
-                ref="textElements"
-                class="text-[150px] whitespace-nowrap leading-none"
-                :style="{ transform: `translate3d(${positions[index]}%, 0, 0)` }"
-              >
+              <img src="/assets/mission/pixel-bg.jpg" alt="pixel-bg"
+                class="absolute w-full h-full object-cover mix-blend-saturation z-[1]" />
+              <p v-for="(text, index) in texts" :key="index" ref="textElements"
+                class="text-4xl sm:text-6xl md:text-8xl lg:text-[150px] whitespace-nowrap leading-none"
+                :style="{ transform: `translate3d(${positions[index]}%, 0, 0)` }">
                 {{ text }}
               </p>
             </div>
@@ -175,19 +158,14 @@ watch(
         </div>
         <hr />
         <div class="min-h-screen" id="passion">
-          <div
-            class="content font-bold uppercase ff-primary clr-dark flex flex-col gap-3"
-          >
+          <div class="content font-bold uppercase ff-primary clr-dark flex flex-col gap-3">
             <h2 class="fs-900 ff-primary">Passion</h2>
             <p class="fs-600 tracking-tighter mt-12">
               A success story High quality and exceptional design
             </p>
-            <img
-              src="/assets/mission/passion.avif"
-              alt="passion"
-              class="w-10/12 aspect-auto h-full object-cover"
-            />
-            <div class="mt-12 flex flex-col gap-6">
+            <img src="/assets/mission/passion.avif" alt="passion"
+              class="w-full md:w-10/12 aspect-auto h-full object-cover mt-6" />
+            <div class="mt-6 md:mt-12 flex flex-col gap-4 md:gap-6">
               <p class="fs-300 font-normal">
                 The unique characteristics of the brand can be traced back to the founder
                 of the company, his personality and his story: the eldest of Dorothea and
@@ -201,24 +179,19 @@ watch(
         </div>
         <hr />
         <div class="min-h-screen" id="legacy">
-          <div
-            class="content font-bold uppercase ff-primary clr-dark flex flex-col gap-3"
-          >
+          <div class="content font-bold uppercase ff-primary clr-dark flex flex-col gap-3">
             <h2 class="fs-900 ff-primary">His Legacy</h2>
             <p class="fs-600 tracking-tighter mt-12">
               A visionary who redefined automotive design, blending innovation with iconic
               simplicity.
             </p>
-            <img
-              src="/assets/mission/legacy.avif"
-              alt="legacy"
-              class="w-11/12 aspect-auto h-[500px] object-cover"
-            />
-            <div class="mt-12 flex flex-col gap-6">
+            <img src="/assets/mission/legacy.avif" alt="legacy"
+              class="w-full md:w-11/12 aspect-auto h-auto sm:h-[300px] md:h-[400px] lg:h-[500px] object-cover mt-6" />
+            <div class="mt-6 md:mt-12 flex flex-col gap-4 md:gap-6">
               <p class="fs-300 font-normal">
                 Ferdinand Alexander Porsche revolutionized automotive design with the
                 creation of the iconic Porsche 911, a car that became a symbol of timeless
-                engineering and elegance. His philosophy of “designing beyond trends”
+                engineering and elegance. His philosophy of "designing beyond trends"
                 established a legacy that influenced not only sports cars but industrial
                 design worldwide. Every curve and contour of his work embodied a balance
                 between aesthetics and performance, setting a benchmark that continues to
@@ -237,7 +210,14 @@ watch(
   position: absolute;
   top: 0;
   left: 0;
+
+  @media (max-width: 767px) {
+    width: 100% !important;
+    position: relative;
+    height: 100%;
+  }
 }
+
 .mission-nav-wrapper {
   position: absolute;
   left: 0;
@@ -249,33 +229,48 @@ watch(
   justify-content: center;
 }
 
-.mission-nav li {
-  &:not(:first-child):hover {
-    color: var(--font-color);
-  }
+.mission-nav {
+  display: flex;
+  flex-direction: column;
 }
 
 .mission-desc {
-  background: white;
+  @media (max-width: 767px) {
+    margin-top: -2rem;
+    position: relative;
+    z-index: 20;
+    background-color: white;
+    border-top-left-radius: 2rem;
+    border-top-right-radius: 2rem;
+    box-shadow: 0 -10px 15px -3px rgba(0, 0, 0, 0.1);
+  }
 }
+
 .moving-text-wrapper {
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
   position: relative;
+
   p {
     transform-style: preserve-3d;
-  }
-}
+    transform-origin: center;
+    color: var(--dark-color);
 
-.moving-img {
-  position: absolute;
-  left: 50%;
-  top: 50%;
-  z-index: 10;
-  height: 60%;
-  width: 60%;
-  transform: translate(-50%, -50%);
+    @media (max-width: 767px) {
+      font-size: clamp(2rem, 14vw, 10rem) !important;
+    }
+  }
+
+  .moving-img {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    z-index: 10;
+    height: 60%;
+    width: 60%;
+    transform: translate(-50%, -50%);
+  }
 }
 </style>

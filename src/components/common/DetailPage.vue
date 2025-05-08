@@ -182,34 +182,24 @@ onUnmounted(() => {
 </script>
 <template>
   <section :class="'detail-page ' + `${startAnimation ? 'start' : ''}`">
-    <div
-      class="detail-bg"
-      :style="{ backgroundImage: `url(${props.data.backgroundImage})` }"
-    ></div>
-    <div class="flex relative h-full">
-      <div class="flex-1"></div>
+    <div class="detail-bg" :style="{ backgroundImage: `url(${props.data.backgroundImage})` }"></div>
+    <div class="flex flex-col md:flex-row relative h-full">
+      <div class="hidden md:block md:flex-1"></div>
       <div ref="detailBoxRef" class="context flex-1 h-full">
-        <div class="flex w-full justify-between items-start p-7">
-          <p ref="titleRef" class="font-bold fs-900 uppercase animated-title">
+        <div class="flex w-full justify-between items-start p-4 sm:p-7">
+          <p ref="titleRef" class="font-bold text-4xl md:text-6xl uppercase animated-title">
             <span v-for="(char, index) in props.data.title.split('')" :key="index">
               {{ char }}
             </span>
           </p>
-          <CustomButton
-            class="detail-close fs-200"
-            @click="closeDetail"
-            text="Close"
-            themeColor="var(--font-color)"
-          />
+          <CustomButton class="detail-close text-xs sm:text-sm md:text-base" @click="closeDetail" text="Close"
+            themeColor="var(--font-color)" />
         </div>
-        <div class="context-detail flow mt-20 w-5/6 mx-auto">
-          <div class="detail-img-slide mx-auto w-2/4">
-            <div
-              class="detail-img"
-              :style="{ backgroundImage: `url(${props.data.images[currentImageIndex]})` }"
-            ></div>
+        <div class="context-detail flow mt-3 md:mt-15 w-11/12 sm:w-10/12 md:w-5/6 mx-auto">
+          <div class="detail-img-slide mx-auto w-full sm:w-4/5 md:w-3/5 lg:w-2/4">
+            <div class="detail-img" :style="{ backgroundImage: `url(${props.data.images[currentImageIndex]})` }"></div>
           </div>
-          <p class="fs-250 ff-p-medium">
+          <p class="text-base md:text-2xl ff-p-medium">
             {{ props.data.description }}
           </p>
         </div>
@@ -224,13 +214,21 @@ onUnmounted(() => {
   top: 0;
   width: 100dvw;
   height: 100dvh;
-  padding: 2rem;
+  padding: 1rem;
   background-color: var(--dark-color);
+
+  @media (min-width: 640px) {
+    padding: 1.5rem;
+  }
+
+  @media (min-width: 768px) {
+    padding: 2rem;
+  }
 }
 
 .detail-bg {
   background-repeat: no-repeat;
-  background-position: -10rem 40%;
+  background-position: center;
   background-size: cover;
   z-index: -1;
   position: absolute;
@@ -239,21 +237,32 @@ onUnmounted(() => {
   width: 100%;
   height: 100%;
   transition: transform 0.25s ease;
+
+  @media (min-width: 768px) {
+    background-position: -10rem 40%;
+  }
 }
 
 .context {
   background-color: white;
 }
+
 .detail-img {
   background-repeat: no-repeat;
   background-position: center;
   background-size: cover;
-  background-color: var(--secondary-color);
-  height: 400px;
+  aspect-ratio: 16/9;
   width: 100%;
-  margin: 0 auto;
+  height: clamp(200px, 45dvh, 450px);
+
+  @media (min-width: 768px) {
+    aspect-ratio: 16/10;
+    height: clamp(200px, 40dvh, 350px);
+  }
 }
-.animated-title span {
-  display: inline-block;
+
+.animated-title {
+  display: flex;
+  flex-wrap: wrap;
 }
 </style>

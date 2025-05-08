@@ -23,23 +23,23 @@ watch(aboutDataState, (newValue) => {
   <section id="about" class="relative">
     <div class="about-overlay"></div>
     <AboutScene />
-    <div class="details w-full">
-      <div class="p-5 px-10">
-        <div class="cursor-pointer detail" @click="viewDetails(aboutData[DetailsInfoEnum.PORSCHE])"
+    <div class="details">
+      <div class="p-3 sm:p-5 sm:px-10">
+        <div class="cursor-pointer detail fs-600" @click="viewDetails(aboutData[DetailsInfoEnum.PORSCHE])"
           data-aos="fade-right">
           Porsche
         </div>
-        <div class="cursor-pointer detail" @click="viewDetails(aboutData[DetailsInfoEnum.POWER])" data-aos="fade-right"
-          data-aos-delay="50">
+        <div class="cursor-pointer detail fs-600" @click="viewDetails(aboutData[DetailsInfoEnum.POWER])"
+          data-aos="fade-right" data-aos-delay="50">
           Power
         </div>
         <!-- https://www.elferspot.com/en/magazin/porsche-active-aerodynamics-paa/ -->
-        <div class="cursor-pointer detail" @click="viewDetails(aboutData[DetailsInfoEnum.PERCISION])"
+        <div class="cursor-pointer detail fs-600" @click="viewDetails(aboutData[DetailsInfoEnum.PERCISION])"
           data-aos="fade-right" data-aos-delay="100">
           Precision
         </div>
         <!-- https://www.porsche.com/international/accessoriesandservice/exclusive-manufaktur/ -->
-        <div class="cursor-pointer detail" @click="viewDetails(aboutData[DetailsInfoEnum.PASSIONS])"
+        <div class="cursor-pointer detail fs-600" @click="viewDetails(aboutData[DetailsInfoEnum.PASSIONS])"
           data-aos="fade-right" data-aos-delay="150">
           Passions
         </div>
@@ -57,18 +57,29 @@ watch(aboutDataState, (newValue) => {
   position: absolute;
   left: 0;
   top: 0;
-  width: 100dvw;
+  width: 100%;
   height: 100%;
-  border-top-left-radius: 5rem;
-  border-top-right-radius: 5rem;
+  border-top-left-radius: 2rem;
+  border-top-right-radius: 2rem;
+
+  @media (min-width: 768px) {
+    border-top-left-radius: 5rem;
+    border-top-right-radius: 5rem;
+  }
 }
 
 #about-scene {
   height: 100dvh;
 
   canvas {
-    border-top-left-radius: 5rem;
-    border-top-right-radius: 5rem;
+    width: 100% !important;
+    border-top-left-radius: 2rem;
+    border-top-right-radius: 2rem;
+
+    @media (min-width: 768px) {
+      border-top-left-radius: 5rem;
+      border-top-right-radius: 5rem;
+    }
   }
 }
 
@@ -80,20 +91,32 @@ watch(aboutDataState, (newValue) => {
     left: 5%;
     transform: translateY(-50%);
     display: flex;
-    font-size: 70px;
     font-weight: bold;
     text-transform: uppercase;
     color: var(--light-color);
-    text-shadow: 8px 10px 10px rgba(54, 69, 79, 0.45);
+    text-shadow: 4px 5px 5px rgba(54, 69, 79, 0.45);
+
+    @media (min-width: 768px) {
+      text-shadow: 8px 10px 10px rgba(54, 69, 79, 0.45);
+    }
 
     .detail {
       position: relative;
       transition: all 0.3s ease;
+      margin-bottom: 0.5rem;
+
+      @media (min-width: 768px) {
+        margin-bottom: 1rem;
+      }
 
       &:hover {
         transform: scale(1.1);
         color: var(--font-color);
-        text-shadow: 4px 4px 10px white;
+        text-shadow: 2px 2px 5px white;
+
+        @media (min-width: 768px) {
+          text-shadow: 4px 4px 10px white;
+        }
       }
     }
   }

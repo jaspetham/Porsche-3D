@@ -84,79 +84,46 @@ onMounted(() => {
 </script>
 <template>
   <div id="loading-text-intro">
-    <div
-      class="intro-img"
-      :style="{ opacity: isLoaded ? 0 : 1, transition: 'opacity 1.5s ease-out' }"
-      v-if="!isLoaded || isLoaded"
-    ></div>
+    <div class="intro-img" :style="{ opacity: isLoaded ? 0 : 1, transition: 'opacity 1.5s ease-out' }"
+      v-if="!isLoaded || isLoaded"></div>
     <video autoplay muted loop playsinline id="background-video">
       <source src="/assets/intro/intro.mp4" type="video/mp4" />
       Your browser does not support the video tag.
     </video>
     <div id="loading-wrapper" class="loading-details">
       <div class="overlay"></div>
-      <div id="loading-value">0%</div>
-      <div class="headlines">
+      <div id="loading-value" class="text-base sm:text-lg md:text-xl lg:text-2xl">0%</div>
+      <div class="headlines uppercase gap-6 ff-primary px-4 sm:px-8 md:px-12 md:gap-10">
         <p class="headline">
-          <span
-            class="inline-block relative"
-            v-for="(char, index) in 'Performance'.split('')"
-            :key="index"
-            >{{ char }}</span
-          >
+          <span class="inline-block relative" v-for="(char, index) in 'Performance'.split('')" :key="index">{{
+            char }}</span>
         </p>
         <p class="headline">
-          <span
-            class="inline-block relative"
-            v-for="(char, index) in 'Innovation'.split('')"
-            :key="index"
-            >{{ char }}</span
-          >
+          <span class="inline-block relative" v-for="(char, index) in 'Innovation'.split('')" :key="index">{{
+            char }}</span>
         </p>
         <p class="headline">
-          <span
-            class="inline-block relative"
-            v-for="(char, index) in 'Luxury'.split('')"
-            :key="index"
-            >{{ char }}</span
-          >
+          <span class="inline-block relative" v-for="(char, index) in 'Luxury'.split('')" :key="index">{{ char
+          }}</span>
         </p>
         <p class="headline">
-          <span
-            class="inline-block relative"
-            v-for="(char, index) in 'Heritage'.split('')"
-            :key="index"
-            >{{ char }}</span
-          >
+          <span class="inline-block relative" v-for="(char, index) in 'Heritage'.split('')" :key="index">{{
+            char }}</span>
         </p>
       </div>
       <div id="start">
-        <button
-          @mouseover="headlinesColor(true)"
-          @mouseleave="headlinesColor(false)"
-          @click="startAnimation"
-          class="uppercase"
-        >
+        <button @mouseover="headlinesColor(true)" @mouseleave="headlinesColor(false)" @click="startAnimation"
+          class="uppercase">
           <span>Enter</span>
           <div class="icon">
-            <svg
-              width="40"
-              height="40"
-              viewBox="0 0 25 24"
-              fill="none"
-              xmlns="http://www.w3.org/2000/svg"
-              transform="rotate(180 0 0)"
-            >
+            <svg width="40" height="40" viewBox="0 0 25 24" fill="none" xmlns="http://www.w3.org/2000/svg"
+              transform="rotate(180 0 0)">
               <path
                 d="M14.1085 9.28033C14.4013 8.98744 14.4013 8.51256 14.1085 8.21967C13.8156 7.92678 13.3407 7.92678 13.0478 8.21967L9.79779 11.4697C9.5049 11.7626 9.5049 12.2374 9.79779 12.5303L13.0478 15.7803C13.3407 16.0732 13.8156 16.0732 14.1085 15.7803C14.4013 15.4874 14.4013 15.0126 14.1085 14.7197L11.3888 12L14.1085 9.28033Z"
-                fill="#262424"
-              />
-              <path
-                fill-rule="evenodd"
-                clip-rule="evenodd"
+                fill="#262424" />
+              <path fill-rule="evenodd" clip-rule="evenodd"
                 d="M12.3281 2C6.80528 2 2.32812 6.47715 2.32812 12C2.32812 17.5228 6.80528 22 12.3281 22C17.851 22 22.3281 17.5228 22.3281 12C22.3281 6.47715 17.851 2 12.3281 2ZM3.82812 12C3.82812 7.30558 7.6337 3.5 12.3281 3.5C17.0225 3.5 20.8281 7.30558 20.8281 12C20.8281 16.6944 17.0225 20.5 12.3281 20.5C7.6337 20.5 3.82812 16.6944 3.82812 12Z"
-                fill="#262424"
-              />
+                fill="#262424" />
             </svg>
           </div>
         </button>
@@ -212,87 +179,146 @@ onMounted(() => {
       opacity: 0;
       visibility: hidden;
     }
+
     #start {
       opacity: 1;
       visibility: visible;
       transform: translateY(0);
     }
   }
+
   #start {
     position: absolute;
     bottom: 5%;
     right: 5%;
-    transition: opacity 0.75s ease, transform 0.9s ease-out;
+    transition: opacity 1s ease, transform 2s ease-out;
     opacity: 0;
     visibility: hidden;
     transform: translateY(300px);
+
+    @media (max-width: 768px) {
+      width: 100%;
+      bottom: 20%;
+      right: 0;
+    }
+
     button {
       display: flex;
       background: var(--font-color);
       color: var(--dark-color);
       font-weight: bold;
-      font-size: var(--fs-350);
-      padding: 0.75rem 2rem;
-      gap: 2rem;
+      font-size: calc(var(--fs-200) + 0.25rem);
+      padding: 0.5rem 1.25rem;
+      gap: 1rem;
       border-top-right-radius: 20px;
       border-bottom-left-radius: 20px;
       border-bottom-right-radius: 20px;
       justify-content: space-between;
       align-items: center;
+
+      @media (min-width: 640px) {
+        font-size: var(--fs-300);
+        padding: 0.5rem 1.5rem;
+        gap: 1.5rem;
+      }
+
+      @media (min-width: 768px) {
+        font-size: var(--fs-350);
+        padding: 0.75rem 2rem;
+        gap: 2rem;
+      }
+
       &:hover {
         background: white;
         color: var(--font-color);
       }
+
+      @media (max-width: 768px) {
+        width: 80%;
+        margin: 0 auto;
+      }
     }
+
     .icon {
       position: relative;
       right: 0;
       transition: right 0.3s ease;
-    }
-    &:hover .icon {
-      right: -0.75rem;
-      border-radius: 50%;
-      path {
-        fill: var(--font-color);
+
+      svg {
+        width: 30px;
+        height: 30px;
+
+        @media (min-width: 768px) {
+          width: 40px;
+          height: 40px;
+        }
       }
     }
   }
+
   #loading-value {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 100%;
-    height: 100%;
-    font-size: 70dvh;
-    font-weight: bold;
-    opacity: 1;
-    transition: opacity 0.5s ease, visibility 0.5s ease-out;
-    font-family: var(--ff-primary);
-    text-shadow: 1px 17px 1px var(--font-color);
-  }
-  .headlines {
     position: absolute;
-    top: 2.5%;
-    left: 2.5%;
-    width: fit-content;
-    z-index: 1;
-    display: flex;
-    flex-direction: column;
-    line-height: 1.1;
-    text-transform: uppercase;
-    .headline {
-      position: relative;
-      font-size: clamp(40px, 8dvw + 40px, 160px);
-      font-weight: bold;
-      transition: all 0.8s ease-out;
+    font-size: 60dvh;
+    font-family: var(--ff-primary);
+    transition: opacity 0.75s ease, visibility 0.75s ease;
+    visibility: visible;
+    top: 50%;
+    left: 50%;
+    transform: translateX(-50%) translateY(-50%);
+    font-weight: 700;
+    text-align: center;
+    text-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+
+    @media (max-width: 768px) {
+      font-size: clamp(50px, 12dvh, 100px);
+    }
+  }
+}
+
+.headlines {
+  position: absolute;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  top: 50%;
+  left: 0;
+  transform: translateY(-50%);
+  width: 100%;
+  text-align: center;
+  letter-spacing: -2px;
+  font-family: var(--ff-special);
+  line-height: 1;
+
+  .headline {
+    white-space: nowrap;
+    opacity: 0;
+    font-weight: bold;
+    overflow: hidden;
+    font-size: clamp(30px, 9vw, 120px);
+
+    span {
+      transform: translateX(-100px);
       opacity: 0;
-      &:nth-child(even) {
-        text-align: right;
+      padding: 0 0.05em;
+
+      @media (min-width: 640px) {
+        padding: 0 0.075em;
       }
-      &:nth-child(odd) {
-        text-align: left;
+
+      @media (min-width: 768px) {
+        padding: 0 0.1em;
       }
     }
   }
+}
+
+.overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.4);
+  z-index: -1;
 }
 </style>

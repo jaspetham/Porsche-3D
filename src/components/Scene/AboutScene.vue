@@ -20,7 +20,7 @@ const handleKeyDown = (e: KeyboardEvent) => {
 
   // Alt + number keys to change shadow quality
   if (e.altKey) {
-    switch(e.key) {
+    switch (e.key) {
       case '0':
         secondaryCanvasInstance.value.setShadowQuality('off');
         console.log('About Canvas Shadows: OFF');
