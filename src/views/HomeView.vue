@@ -54,4 +54,10 @@ onUnmounted(() => {
       <MissionSection />
     </section>
   </main>
+  <footer class="bg-gray-900 text-white py-4 relative z-10">
+    <div class="flex justify-center items-center">
+      <p>View the source code on <a class="text-blue-500" target="_blank" href="https://github.com/jaspetham/Porsche-3D">GitHub</a>.</p>
+      <p>&copy; 2025 Jasper Tham. All rights reserved.</p>
+    </div>
+  </footer>
 </template>
