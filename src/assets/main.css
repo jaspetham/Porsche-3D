@@ -187,8 +187,8 @@ html {
 }
 
 body {
-  overflow: hidden;
-  overflow-x: hidden;
+  /* overflow: hidden; */
+  /* overflow-x: hidden; */
   color: var(--font-color);
   font-size: var(--fs-200);
   font-family: var(--ff-primary) !important;

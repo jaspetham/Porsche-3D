@@ -98,7 +98,7 @@ class HeroCanvas implements Canvas {
     })
   }
 
-  toggleForceRender(force: boolean): void {
+  toggleForceRender(): void {
     if (this.cleanupVisibilityObserver) {
       this.cleanupVisibilityObserver()
     }
